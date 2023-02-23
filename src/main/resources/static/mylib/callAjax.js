@@ -1,22 +1,26 @@
-function callDB(urlApi, type, objectData, itemName, urlSuccess, action) {
+function callDB(urlApi, type, data, cb) {
     $.ajax({
         url: urlApi,
         type: type,
         contentType: 'application/json',
-        data: JSON.stringify(objectData),
+        data: JSON.stringify(data),
         dataType: 'json',
         success: function (result) {
-            swal(action + " " + itemName + "!", "You have successfully"+ action + "ed a " + itemName + "!", "success");
-            setTimeout(() => window.location.href = urlSuccess,1000);
+            cb({
+                status: true,
+                data: result
+            });
         },
         error: function (xhr) {
-            var err = JSON.parse(xhr.responseText);
-            swal(err.message);
+            cb({
+                status: false,
+                data: JSON.parse(xhr.responseText).message
+            });
         }
     });
 }
 
-function handleClick(idForm, idBtn, urlApi, type, itemName, urlSuccess, action){
+function handleClick(idForm, idBtn, urlApi, type, cb){
     $(idBtn).click(function (e) {
         e.preventDefault();
         var data = {};
@@ -28,6 +32,6 @@ function handleClick(idForm, idBtn, urlApi, type, itemName, urlSuccess, action){
                 data[""+v.name+""] = v.value;
             });
         }
-        callDB(urlApi, type, data, itemName, urlSuccess, action);
+        callDB(urlApi, type, data, cb);
     });
 }

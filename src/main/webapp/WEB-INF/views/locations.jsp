@@ -73,7 +73,26 @@
                 </div>
             </div>
         </div>
-
+        <%-- modal delete --%>
+        <div class="modal fade" id="modal-delete" tabindex="-1">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title pull-left">Delete location</h5>
+                    </div>
+                    <div class="modal-body">
+                        <form action="" id="formSubmitDeleteClassification">
+                            <input type="hidden" id="idHiddenDeleteClassification" name="id"/>
+                            Are you sure you want to delete this item?
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btnDeleteLocationSave" type="button" class="btn btn-link" data-dismiss="modal">Save changes</button>
+                        <button type="button" class="btn btn-link" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="table-responsive">
             <form id="frm-location" action="">
                 <table id="data-table-location" class="table">
@@ -85,11 +104,12 @@
                         <th>QR</th>
                         <th>
                             <input type="checkbox" name="select_all" value="1" id="example-select-all">
-                            Excel Delete</th>
+                            <button style="margin-left: 20px"type="button" class="btn btn-success">Excel</button>
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-delete">Delete</button>
+                        </th>
                     </tr>
                     </thead>
                 </table>
-                <button type="submit" class="btn btn-primary">submit</button>
             </form>
         </div>
     </div>
@@ -144,21 +164,7 @@
                 }
             }
         });
-        // Handle form submission event
-        $('#frm-location').on('submit', function(e){
-            e.preventDefault();
-            var ids = [];
-            // Iterate over all checkboxes in the table
-            table.$('input[type="checkbox"]').each(function(e, v){
-                if(v.checked){
-                    ids.push(v.value);
-                }
-            });
-            callDB('/api/locations', 'delete', ids, 'Location', '/locations', 'Delete');
-        });
-
     });
-
 
     function myResult(array){
         for(var x of array){
@@ -189,24 +195,39 @@
         resultTxtAddLocation.text('');
     });
     handleClick("#formSubmitAddLocation", "#btnAddLocationSave", "/api/locations", "post",
-        "location", "/locations", "Add");
+        function (result) {
+            if(result.status){
+                table.ajax.reload();
+                swal("Add location!", "You have successfully added a location!", "success");
+            }else{
+                swal(result.data);
+            }
+        });
 
-
-
-
-    // // edit or delete
-    // function clickBtnEditOrDelete(id, value, type){
-    //     if(type=='edit'){
-    //         $('#inputEditClassification').val(value);
-    //         $('#idHiddenEditClassification').val(id);
-    //         handleClick("#formSubmitEditClassification", "#btnEditClassificationSave",
-    //             "/api/classifications", "put", "classification", "/classifications", "Edit");
-    //     }else{
-    //          $('#idHiddenDeleteClassification').val(id);
-    //          handleClick("#formSubmitDeleteClassification", "#btnDeleteClassificationSave", "/api/classifications", "delete",
-    //              "classification", "/classifications", "Delete");
-    //     }
-    // }
+    // delete
+    $('#btnDeleteLocationSave').click(function (e) {
+        // Handle form submission event
+        e.preventDefault();
+        var ids = [];
+        // Iterate over all checkboxes in the table
+        table.$('input[type="checkbox"]').each(function(e, v){
+            if(v.checked){
+                ids.push(v.value);
+            }
+        });
+        if(ids.length != 0){
+            callDB('/api/locations', 'delete', ids, function (result) {
+                if(result.status){
+                    table.ajax.reload();
+                    swal("Delete location!", "You have successfully deleted a location!", "success");
+                }else{
+                    swal(result.data);
+                }
+            });
+        }else{
+            swal('You have not selected the items');
+        }
+    });
 </script>
 </body>
 </html>
