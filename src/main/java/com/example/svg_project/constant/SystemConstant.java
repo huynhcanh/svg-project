@@ -1,0 +1,9 @@
+package com.example.svg_project.constant;
+
+public class SystemConstant {
+    public static final int ACTIVE_STATUS = 1;
+    public static final int INACTIVE_STATUS = 0;
+
+    // rest template
+    public static final String BASE_API = "http://localhost:8080/api";
+}
