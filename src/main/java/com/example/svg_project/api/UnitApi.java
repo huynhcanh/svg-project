@@ -3,10 +3,16 @@ package com.example.svg_project.api;
 import com.example.svg_project.model.request.UpdateUnitRequest;
 import com.example.svg_project.model.response.UnitResponse;
 import com.example.svg_project.service.UnitService;
+import com.example.svg_project.utils.GenerateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.BufferedImageHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 @RestController

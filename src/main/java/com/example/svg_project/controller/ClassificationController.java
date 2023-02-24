@@ -12,13 +12,10 @@ import java.util.List;
 @Controller
 public class ClassificationController {
 
-    @Autowired
-    private RestTemplate restTemplate;
 
     @RequestMapping(value = "/classifications", method = RequestMethod.GET)
     public ModelAndView classificationsPage() {
         ModelAndView mav = new ModelAndView("classifications");
-        mav.addObject("classifications", restTemplate.getForObject("/classifications", List.class));
         return mav;
     }
 }

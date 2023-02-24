@@ -127,7 +127,12 @@
                 { data: 'warehouse' },
                 { data: 'rack' },
                 { data: 'tray' },
-                { data: 'id' },
+                {
+                  data: 'id',
+                  'render': function (data, type, full, meta){
+                      return '<img class="item-img-qr" src="/api/generate-qr?id=' + data + '" width="50">'
+                  }
+                },
                 {
                     data: 'id',
                     'render': function (data, type, full, meta){
@@ -228,6 +233,14 @@
             swal('You have not selected the items');
         }
     });
+
+    // // show Qr image
+    //
+    //     var itemImgQr = document.getElementsByClassName('item-img-qr');
+    //     for(var i of itemImgQr){
+    //         console.log(i);
+    //     }
+
 </script>
 </body>
 </html>
