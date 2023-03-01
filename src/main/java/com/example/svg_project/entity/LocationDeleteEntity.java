@@ -6,14 +6,13 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "location",
-        uniqueConstraints= @UniqueConstraint(columnNames= {"warehouse", "rack", "tray"}))
+@Table(name = "locationdelete")
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LocationEntity extends BaseEntity{
+public class LocationDeleteEntity extends BaseEntity{
 
     @Column(name="warehouse")
     private String warehouse;
@@ -23,7 +22,4 @@ public class LocationEntity extends BaseEntity{
 
     @Column(name="tray")
     private String tray;
-
-    @OneToMany(mappedBy = "location", fetch = FetchType.LAZY)
-    private List<ItemEntity> items;
 }

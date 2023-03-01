@@ -32,68 +32,7 @@ public class UnitServiceImpl implements UnitService {
 
     @Override
     public List<UnitResponse> findAll() {
-        List<UnitEntity> unitEntities = unitRepository.findAllByStatus(SystemConstant.ACTIVE_STATUS);
+        List<UnitEntity> unitEntities = unitRepository.findAll();
         return unitEntities.stream().map(item->unitMapper.toResponse(item)).collect(Collectors.toList());
-    }
-
-    boolean isValueExsit(String value) {
-        List<UnitEntity> unitEntities = unitRepository.findAllByStatus(SystemConstant.ACTIVE_STATUS);
-        for(UnitEntity unitEntity: unitEntities) {
-            if(unitEntity.getValue().equals(value)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public UnitResponse createUnit(String valueRequest) {
-        valueRequest = FormatUtils.formatValue(valueRequest);
-        if(isValueExsit(valueRequest)) {
-            throw new ValueExistException(ExceptionUtils.exsitValueMessage("This value"));
-        }
-        UnitEntity unitEntity = UnitEntity.builder()
-                    .value(valueRequest)
-                    .code(FormatUtils.valueToCode(valueRequest))
-                    .status(SystemConstant.ACTIVE_STATUS)
-                    .build();
-        return unitMapper.toResponse(
-                unitRepository.save(unitEntity));
-    }
-
-    @Override
-    public UnitResponse updateUnit(UpdateUnitRequest updateUnitRequest) {
-        Long idRequest = updateUnitRequest.getId();
-        Optional<UnitEntity> UnitEntityOptional = unitRepository.findById(idRequest);
-        if(!UnitEntityOptional.isPresent()){
-            throw new NotFoundException(ExceptionUtils.notFoundMessage("id"));
-        }
-        String valueRequest = FormatUtils.formatValue(updateUnitRequest.getValue());
-        if(isValueExsit(valueRequest)) {
-            throw new ValueExistException(ExceptionUtils.exsitValueMessage("This value"));
-        }
-        UnitEntity UnitEntity = UnitEntityOptional.get();
-        UnitEntity.setValue(valueRequest);
-        UnitEntity.setCode(FormatUtils.valueToCode(valueRequest));
-        return unitMapper.toResponse(
-                unitRepository.save(UnitEntity));
-    }
-
-    @Override
-    public List<Long> deleteUnits(List<Long> ids) {
-        List<UnitEntity> unitEntities = unitRepository.findAllByStatus(SystemConstant.ACTIVE_STATUS);
-        Long idCheck = EntityUtils.isEntityIdsConstantIds(unitEntities, ids);
-        if(idCheck != -1){
-            throw new NotFoundException(ExceptionUtils.notFoundMessage("id = " + idCheck));
-        }
-
-        List<Long> listIdDelete = new ArrayList();
-        unitEntities = unitRepository.findByIdIn(ids);
-        for(UnitEntity UnitEntity: unitEntities){
-            UnitEntity.setStatus(SystemConstant.INACTIVE_STATUS);
-            UnitEntity = unitRepository.save(UnitEntity);
-            listIdDelete.add(UnitEntity.getId());
-        }
-        return listIdDelete;
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface LocationRepository extends JpaRepository<LocationEntity, Long> {
-    List<LocationEntity> findAllByStatus(int status);
     List<LocationEntity> findByIdIn(List<Long> ids);
+    void deleteByIdIn(List<Long> ids);
+    LocationEntity findByWarehouseAndRackAndTray(String warehouse, String rack, String tray);
 }

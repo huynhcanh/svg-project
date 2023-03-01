@@ -1,11 +1,13 @@
 package com.example.svg_project.api;
 
+import com.example.svg_project.exception.NotFoundException;
 import com.example.svg_project.model.request.AddOrUpdateItemRequest;
 import com.example.svg_project.model.request.UpdateClassificationRequest;
 import com.example.svg_project.model.response.ClassificationResponse;
 import com.example.svg_project.model.response.ItemResponse;
 import com.example.svg_project.service.ClassificationService;
 import com.example.svg_project.service.ItemService;
+import com.example.svg_project.utils.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +24,16 @@ public class ItemApi {
     @GetMapping("/items")
     public List<ItemResponse> findAll() {
         return itemService.findAll();
+    }
+
+    @GetMapping("/item")
+    public ItemResponse getItem(@RequestParam Long id) {
+        return itemService.getItem(id);
+    }
+
+    @GetMapping("/items-by-ids")
+    public List<ItemResponse> getItems(@RequestParam List<Long> ids) {
+        return itemService.getItems(ids);
     }
 
     @PostMapping("/items")

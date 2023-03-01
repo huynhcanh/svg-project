@@ -91,7 +91,8 @@
 
 <%--            <li class="@@calendaractive"><a href="calendar.html"><i class="zmdi zmdi-calendar"></i> Calendar</a></li>--%>
 
-<%--            <li class="@@photogalleryactive"><a href="photo-gallery.html"><i class="zmdi zmdi-image"></i> Photo Gallery</a></li>--%>
+            <li class="@@photogalleryactive"><a href="/items"><i class="zmdi zmdi-image"></i> Items</a></li>
+            <li class="@@photogalleryactive"><a href="/managements"><i class="zmdi zmdi-view-list"></i> Managements</a></li>
 
 <%--            <li class="navigation__sub @@samplepagesactive">--%>
 <%--                <a href="#"><i class="zmdi zmdi-collection-item"></i> Sample Pages</a>--%>

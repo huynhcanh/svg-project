@@ -7,7 +7,4 @@ import java.util.List;
 
 public interface UnitService {
     List<UnitResponse> findAll();
-    UnitResponse createUnit(String valueRequest);
-    UnitResponse updateUnit(UpdateUnitRequest updateUnitRequest);
-    List<Long> deleteUnits(List<Long> ids);
 }

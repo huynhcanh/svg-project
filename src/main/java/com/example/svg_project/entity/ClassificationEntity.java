@@ -19,9 +19,6 @@ public class ClassificationEntity extends BaseEntity{
     @Column(name = "value")
     private String value;
 
-    @Column(name="status")
-    private Integer status;
-
-    @OneToMany(mappedBy = "classification", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "classification", fetch = FetchType.LAZY)
     private List<ItemEntity> items;
 }

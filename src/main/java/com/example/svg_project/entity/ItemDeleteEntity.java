@@ -5,13 +5,13 @@ import lombok.*;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "item")
+@Table(name = "itemdelete")
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ItemEntity extends BaseEntity{
+public class ItemDeleteEntity extends BaseEntity{
     @Column(name="name")
     private String name;
 
@@ -24,15 +24,12 @@ public class ItemEntity extends BaseEntity{
     @Column(name="quantity")
     private Integer quantity;
 
-    @ManyToOne
-    @JoinColumn(name="classificationid")
-    private ClassificationEntity classification;
+    @Column(name="classificationcode")
+    private String classificationCode;
 
-    @ManyToOne
-    @JoinColumn(name="unitid")
-    private UnitEntity unit;
+    @Column(name="unitcode")
+    private String unitCode;
 
-    @ManyToOne
-    @JoinColumn(name="locationid")
-    private LocationEntity location;
+    @Column(name="locationid")
+    private Long locationId;
 }

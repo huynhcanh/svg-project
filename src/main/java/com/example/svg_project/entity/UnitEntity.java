@@ -19,9 +19,6 @@ public class UnitEntity extends BaseEntity{
     @Column(name = "value")
     private String value;
 
-    @Column(name="status")
-    private Integer status;
-
     @OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ItemEntity> items;
 }

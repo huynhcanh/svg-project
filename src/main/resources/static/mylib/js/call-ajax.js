@@ -35,3 +35,21 @@ function handleClick(idForm, idBtn, urlApi, type, cb){
         callDB(urlApi, type, data, cb);
     });
 }
+
+function loadSelect(idSelect, api, codeSelected){
+    callDB(api, "get", null, function (result) {
+        var array = result.data;
+        $(idSelect).empty().append('<option value="">Select an Option</option>')
+        for(var item of array){
+            if(codeSelected && codeSelected === item.code){
+                $(idSelect).append('<option selected value="' + item.code + '">'
+                    + item.value + '</option>');
+            }else{
+                $(idSelect).append('<option value="' + item.code + '">'
+                    + item.value + '</option>');
+            }
+        }
+        // custom template: set color for option element
+        $(idSelect).find('option').css('color', 'black');
+    });
+}

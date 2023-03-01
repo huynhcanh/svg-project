@@ -11,4 +11,6 @@ public interface ItemService {
     List<ItemResponse> findAll();
     ItemResponse createOrUpdateItem(AddOrUpdateItemRequest addOrUpdateItemRequest);
     List<Long> deleteItems(List<Long> ids);
+    ItemResponse getItem(Long id);
+    List<ItemResponse> getItems(List<Long> ids);
 }

@@ -107,6 +107,9 @@
         </div>
     </div>
 </div>
+
+<script src="/mylib/js/call-ajax.js"></script>
+
 <script>
     var table;
     $(document).ready(function (){
@@ -171,7 +174,7 @@
 
     // add
     $('#btnAddClassification').click(function (e) {
-        $('#inputAddClassification').val('');
+        $('#formSubmitAddClassification').trigger('reset');
     });
     handleClick("#formSubmitAddClassification", "#btnAddClassificationSave", "/api/classifications", "post",
         function (result) {

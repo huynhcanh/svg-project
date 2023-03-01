@@ -21,8 +21,7 @@
     <script src="http://code.jquery.com/jquery.min.js" type="text/javascript"></script>
     <%-- sweetalert2 --%>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-    <%-- mylib --%>
-    <script src="/mylib/callAjax.js"></script>
+
 </head>
 <body data-sa-theme="1">
     <main class="main">

@@ -1,7 +1,5 @@
 package com.example.svg_project.model.response;
 
-import com.example.svg_project.entity.ClassificationEntity;
-import com.example.svg_project.entity.UnitEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,4 +14,7 @@ public class ItemResponse {
     private String remark;
     private UnitResponse unit;
     private ClassificationResponse classification;
+    private LocationResponse location;
+    private Integer quantity;
+    private String modifiedBy;
 }
