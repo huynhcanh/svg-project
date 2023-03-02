@@ -22,6 +22,13 @@ public class CustomExceptionHandler {
     public ErrorResponse handlerValueExistException(ValueExistException ex, WebRequest req) {
         return new ErrorResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
+    // handle value exsit exception
+    @ExceptionHandler(QuantityNotEnoughtException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handlerQtyNotEnoughtException(QuantityNotEnoughtException ex, WebRequest req) {
+        return new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     // validate
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)  // Nếu validate fail thì trả về 400

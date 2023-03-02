@@ -1,14 +1,11 @@
 package com.example.svg_project.model.mapper;
 
-import com.example.svg_project.constant.SystemConstant;
 import com.example.svg_project.entity.ClassificationEntity;
 import com.example.svg_project.entity.ItemEntity;
 import com.example.svg_project.entity.LocationEntity;
 import com.example.svg_project.entity.UnitEntity;
 import com.example.svg_project.exception.NotFoundException;
 import com.example.svg_project.model.request.AddOrUpdateItemRequest;
-import com.example.svg_project.model.request.UpdateClassificationRequest;
-import com.example.svg_project.model.response.ClassificationResponse;
 import com.example.svg_project.model.response.ItemResponse;
 import com.example.svg_project.repository.ClassificationRepository;
 import com.example.svg_project.repository.ItemRepository;
@@ -88,6 +85,19 @@ public class ItemMapper {
         itemEntity.setUnit(unitEntity);
         itemEntity.setClassification(classificationEntity);
         itemEntity.setLocation(locationEntity);
+        return itemEntity;
+    }
+
+    public ItemEntity toEntity(ItemEntity item, LocationEntity newLocation, int newQty){
+        ItemEntity itemEntity = ItemEntity.builder()
+                .name(item.getName())
+                .unit(item.getUnit())
+                .remark(item.getRemark())
+                .color(item.getColor())
+                .classification(item.getClassification())
+                .location(newLocation)
+                .quantity(newQty)
+                .build();
         return itemEntity;
     }
 }

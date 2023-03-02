@@ -278,7 +278,12 @@
                 },
                 { data: 'id' },
                 { data: 'name' },
-                { data: 'unit.value' },
+                {
+                    data: 'unit',
+                    'render': function (data, type, full, meta) {
+                        return (data) ? data.value: null;
+                    }
+                },
                 { data: 'color' },
                 { data: 'remark' },
                 {

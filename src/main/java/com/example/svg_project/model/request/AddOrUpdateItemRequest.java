@@ -2,6 +2,7 @@ package com.example.svg_project.model.request;
 
 import com.example.svg_project.entity.ClassificationEntity;
 import com.example.svg_project.entity.UnitEntity;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -2,6 +2,7 @@ package com.example.svg_project.api;
 
 import com.example.svg_project.exception.NotFoundException;
 import com.example.svg_project.model.request.AddOrUpdateItemRequest;
+import com.example.svg_project.model.request.MoveItemRequest;
 import com.example.svg_project.model.request.UpdateClassificationRequest;
 import com.example.svg_project.model.response.ClassificationResponse;
 import com.example.svg_project.model.response.ItemResponse;
@@ -49,5 +50,10 @@ public class ItemApi {
     @DeleteMapping("/items")
     public List<Long> updateItem(@RequestBody List<Long> ids) {
         return itemService.deleteItems(ids);
+    }
+
+    @PutMapping("/move-items")
+    public List<ItemResponse> moveItems(@Valid @RequestBody MoveItemRequest moveItemRequest) {
+        return itemService.moveItems(moveItemRequest);
     }
 }

@@ -228,21 +228,19 @@
         var apiParams = ids.join(',');
         callDB('/api/items-by-ids?ids=' + apiParams, 'get', null, function (result) {
             if(result.status){
-                var tbodyE = $('#formSubmitMoveItem').find('tbody');
-                tbodyE.empty();
+                $("#formSubmitMoveItem tbody").empty();
                 result.data.forEach(function (e) {
-                    tbodyE.append('<tr>');
-                    tbodyE.append('<td>' + e.location.warehouse + '-' + e.location.rack +
-                        '-' + e.location.tray + '</td>');
-                    tbodyE.append('<td>' + e.classification.value + '</td>');
-                    tbodyE.append('<td>' + e.id + '</td>');
-                    tbodyE.append('<td>' + e.name + '</td>');
-                    tbodyE.append('<td>' + e.color + '</td>');
-                    tbodyE.append('<td>' +
-                        '<input type="hidden" name="id" value="' + e.id + '"/>' +
-                        '<input name="quantity" class="w-25" type="text"> / <span class="text-red">' +
-                        e.quantity + '</span></td>');
-                    tbodyE.append('</tr>');
+                    var newRow = $("<tr>");
+                    newRow.append($("<td>").text((e.location!=null)?(e.location.warehouse + '-' + e.location.rack +
+                        '-' + e.location.tray):null));
+                    newRow.append($("<td>").text((e.classification != null)?e.classification.value:null));
+                    newRow.append($("<td>").text(e.id));
+                    newRow.append($("<td>").text(e.name));
+                    newRow.append($("<td>").text(e.color));
+                    newRow.append($('<td><input type="hidden" name="id" value="' + e.id + '"/>' +
+                        '<input name="quantity" class="w-25" type="text"> / ' +
+                        '<span class="text-red">' + e.quantity + '</span></td>'));
+                    $("#formSubmitMoveItem tbody").append(newRow);
                 });
             }else{
                 swal(result.data);
@@ -250,26 +248,35 @@
         });
     });
 
-    $('#btnMoveItemSave').click(function (e) {
-        e.preventDefault();
-        var data = {};
+
+    $('#btnMoveItemSave').click(function(e) {
+
         var formData = $('#formSubmitMoveItem').serializeArray();
-        $.each(formData, function (i, v) {
-            // if(v.name) chua ton tai thi data[""+v.name+""] = v.value;
-            // else { push vao v.name da ton tai}
-            data[""+v.name+""] = v.value;
-        });
-        console.log(formData);
-    })
-    // handleClick("#formSubmitMoveItem", "#btnMoveItemSave", "/api/items-by-ids", "post",
-    //     function (result) {
-    //         if(result.status){
-    //             table.ajax.reload();
-    //             swal("Add Item!", "You have successfully added a item!", "success");
-    //         }else{
-    //             swal(result.data);
-    //         }
-    //     });
+
+        var data = {};
+        for (var i = 0; i < formData.length; i++) {
+            if (formData[i].name == 'id') {
+                if (!data.items) {
+                    data.items = [];
+                }
+                data.items.push({id: formData[i].value});
+            } else if (formData[i].name == 'quantity') {
+                var lastIndex = data.items.length - 1;
+                data.items[lastIndex].quantity = formData[i].value;
+            } else {
+                data[formData[i].name] = formData[i].value;
+            }
+        }
+        callDB("/api/move-items", "put", data,
+            function (result) {
+                if(result.status){
+                    table.ajax.reload();
+                }else{
+                    swal(result.data);
+                }
+            });
+    });
+
 </script>
 </body>
 </html>

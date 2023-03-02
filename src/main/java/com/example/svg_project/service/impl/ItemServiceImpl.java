@@ -2,13 +2,17 @@ package com.example.svg_project.service.impl;
 
 import com.example.svg_project.entity.ClassificationEntity;
 import com.example.svg_project.entity.ItemEntity;
+import com.example.svg_project.entity.LocationEntity;
 import com.example.svg_project.exception.NotFoundException;
+import com.example.svg_project.exception.QuantityNotEnoughtException;
 import com.example.svg_project.model.mapper.ItemDeleteMapper;
 import com.example.svg_project.model.mapper.ItemMapper;
 import com.example.svg_project.model.request.AddOrUpdateItemRequest;
+import com.example.svg_project.model.request.MoveItemRequest;
 import com.example.svg_project.model.response.ItemResponse;
 import com.example.svg_project.repository.ItemDeleteRepository;
 import com.example.svg_project.repository.ItemRepository;
+import com.example.svg_project.repository.LocationRepository;
 import com.example.svg_project.service.ItemService;
 import com.example.svg_project.utils.EntityUtils;
 import com.example.svg_project.utils.ExceptionUtils;
@@ -35,6 +39,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Autowired
     ItemDeleteMapper itemDeleteMapper;
+
+    @Autowired
+    LocationRepository locationRepository;
 
     @Override
     public List<ItemResponse> findAll() {
@@ -89,6 +96,39 @@ public class ItemServiceImpl implements ItemService {
         }
 
         itemEntities = itemRepository.findByIdIn(ids);
+        return itemEntities.stream().map(item->itemMapper.toResponse(item)).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public List<ItemResponse> moveItems(MoveItemRequest moveItemRequest) {
+        String warehouse = moveItemRequest.getWarehouse();
+        String rack = moveItemRequest.getRack();
+        String tray = moveItemRequest.getTray();
+        LocationEntity locationEntity = locationRepository.findByWarehouseAndRackAndTray(
+                warehouse, rack, tray);
+        if(locationEntity == null){
+            locationEntity = LocationEntity.builder()
+                    .warehouse(warehouse)
+                    .rack(rack)
+                    .tray(tray)
+                    .build();
+            locationEntity = locationRepository.save(locationEntity);
+        }
+        List<ItemEntity> itemEntities = new ArrayList<>();
+        for(MoveItemRequest.MoveDetailRequest item: moveItemRequest.getItems()){
+            ItemEntity itemEntity = itemRepository.findById(item.getId()).get();
+            int remainQuantity = itemEntity.getQuantity() - item.getQuantity();
+            if(remainQuantity<0)
+                throw new QuantityNotEnoughtException(ExceptionUtils.qtyNotEnoughMessage(item.getId()));
+            if(itemEntity.getLocation().getId() != locationEntity.getId()){
+                // save item current
+                itemEntity.setQuantity(remainQuantity);
+                itemRepository.save(itemEntity);
+                // reate new item with new location
+                itemEntities.add(itemRepository.save(itemMapper.toEntity(itemEntity, locationEntity, item.getQuantity())));
+            }
+        }
         return itemEntities.stream().map(item->itemMapper.toResponse(item)).collect(Collectors.toList());
     }
 }

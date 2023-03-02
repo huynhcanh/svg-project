@@ -4,7 +4,6 @@ import com.example.svg_project.entity.ItemEntity;
 import com.example.svg_project.entity.LocationEntity;
 import com.example.svg_project.exception.NotFoundException;
 import com.example.svg_project.exception.ValueExistException;
-import com.example.svg_project.model.mapper.LocationDeleteMapper;
 import com.example.svg_project.model.mapper.LocationMapper;
 import com.example.svg_project.model.request.AddLocationRequest;
 import com.example.svg_project.model.response.LocationResponse;
@@ -29,9 +28,6 @@ public class LocationServiceImpl implements LocationService {
 
     @Autowired
     LocationMapper locationMapper;
-
-    @Autowired
-    LocationDeleteMapper locationDeleteMapper;
 
     @Autowired
     ItemRepository itemRepository;
