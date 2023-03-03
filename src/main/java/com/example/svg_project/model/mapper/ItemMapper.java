@@ -2,10 +2,9 @@ package com.example.svg_project.model.mapper;
 
 import com.example.svg_project.entity.ClassificationEntity;
 import com.example.svg_project.entity.ItemEntity;
-import com.example.svg_project.entity.LocationEntity;
 import com.example.svg_project.entity.UnitEntity;
 import com.example.svg_project.exception.NotFoundException;
-import com.example.svg_project.model.request.AddOrUpdateItemRequest;
+import com.example.svg_project.model.request.UpdateItemRequest;
 import com.example.svg_project.model.response.ItemResponse;
 import com.example.svg_project.repository.ClassificationRepository;
 import com.example.svg_project.repository.ItemRepository;
@@ -32,72 +31,33 @@ public class ItemMapper {
     @Autowired
     private ItemRepository itemRepository;
 
-    @Autowired
-    private LocationRepository locationRepository;
-
     public ItemResponse toResponse(ItemEntity entity) {
         return modelMapper.map(entity, ItemResponse.class);
     }
 
-    public ItemEntity toEntity(AddOrUpdateItemRequest addOrUpdateItemRequest) {
+    public ItemEntity toEntity(UpdateItemRequest updateItemRequest) {
 
         ClassificationEntity classificationEntity =
-                classificationRepository.findByCode(addOrUpdateItemRequest.getClassificationCode());
+                classificationRepository.findByCode(updateItemRequest.getClassificationCode());
         if(classificationEntity == null){
             throw new NotFoundException(ExceptionUtils.notFoundMessage("classification code"));
         }
         UnitEntity unitEntity =
-                unitRepository.findByCode(addOrUpdateItemRequest.getUnitCode());
+                unitRepository.findByCode(updateItemRequest.getUnitCode());
         if(unitEntity == null){
             throw new NotFoundException(ExceptionUtils.notFoundMessage("unit code"));
         }
 
-        ItemEntity itemEntity = null;
-
-        String warehouse = addOrUpdateItemRequest.getWarehouse();
-        String rack = addOrUpdateItemRequest.getRack();
-        String tray = addOrUpdateItemRequest.getTray();
-        LocationEntity locationEntity = locationRepository.findByWarehouseAndRackAndTray(
-                warehouse, rack, tray);
-        if(locationEntity == null){
-            locationEntity = LocationEntity.builder()
-                    .warehouse(warehouse)
-                    .rack(rack)
-                    .tray(tray)
-                    .build();
-            locationEntity = locationRepository.save(locationEntity);
+        Long itemRequestId = updateItemRequest.getId();
+        Optional<ItemEntity> optionalItemEntity = itemRepository.findById(itemRequestId);
+        if(!optionalItemEntity.isPresent()){
+            throw new NotFoundException(ExceptionUtils.notFoundMessage("id"));
         }
 
-        Long itemRequestId = addOrUpdateItemRequest.getId();
-        if(itemRequestId == null){ // add
-            itemEntity = modelMapper.map(addOrUpdateItemRequest, ItemEntity.class);
-        }else{
-            Optional<ItemEntity> optionalItemEntity = itemRepository.findById(itemRequestId);
-            if(!optionalItemEntity.isPresent()){
-                throw new NotFoundException(ExceptionUtils.notFoundMessage("id"));
-            }
-            itemEntity = optionalItemEntity.get();
-            itemEntity.setColor(addOrUpdateItemRequest.getColor());
-            itemEntity.setName(addOrUpdateItemRequest.getName());
-            itemEntity.setRemark(addOrUpdateItemRequest.getRemark());
-            itemEntity.setQuantity(addOrUpdateItemRequest.getQuantity());
-        }
+        ItemEntity itemEntity = modelMapper.map(updateItemRequest, ItemEntity.class);
+
         itemEntity.setUnit(unitEntity);
         itemEntity.setClassification(classificationEntity);
-        itemEntity.setLocation(locationEntity);
-        return itemEntity;
-    }
-
-    public ItemEntity toEntity(ItemEntity item, LocationEntity newLocation, int newQty){
-        ItemEntity itemEntity = ItemEntity.builder()
-                .name(item.getName())
-                .unit(item.getUnit())
-                .remark(item.getRemark())
-                .color(item.getColor())
-                .classification(item.getClassification())
-                .location(newLocation)
-                .quantity(newQty)
-                .build();
         return itemEntity;
     }
 }

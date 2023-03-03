@@ -115,7 +115,7 @@
     $(document).ready(function (){
         table = $('#data-table-item').DataTable({
             'ajax': {
-                'url': '/api/items',
+                'url': '/api/item-location',
                 'method': 'GET',
                 'dataSrc': ''
             },
@@ -139,15 +139,15 @@
                     }
                 },
                 {
-                    data: 'classification',
+                    data: 'item.classification',
                     'render': function (data, type, full, meta) {
                         return (data) ? data.value: null;
                     }
                 },
-                { data: 'id' },
-                { data: 'name' },
+                { data: 'item.id' },
+                { data: 'item.name' },
                 { data: 'quantity' },
-                { data: 'color' },
+                { data: 'item.color' },
                 { data: 'modifiedBy' },
                 {
                     data: 'id',
@@ -226,17 +226,17 @@
         });
 
         var apiParams = ids.join(',');
-        callDB('/api/items-by-ids?ids=' + apiParams, 'get', null, function (result) {
+        callDB('/api/item-location-by-ids?ids=' + apiParams, 'get', null, function (result) {
             if(result.status){
                 $("#formSubmitMoveItem tbody").empty();
                 result.data.forEach(function (e) {
                     var newRow = $("<tr>");
                     newRow.append($("<td>").text((e.location!=null)?(e.location.warehouse + '-' + e.location.rack +
                         '-' + e.location.tray):null));
-                    newRow.append($("<td>").text((e.classification != null)?e.classification.value:null));
-                    newRow.append($("<td>").text(e.id));
-                    newRow.append($("<td>").text(e.name));
-                    newRow.append($("<td>").text(e.color));
+                    newRow.append($("<td>").text((e.item.classification != null)?e.item.classification.value:null));
+                    newRow.append($("<td>").text(e.item.id));
+                    newRow.append($("<td>").text(e.item.name));
+                    newRow.append($("<td>").text(e.item.color));
                     newRow.append($('<td><input type="hidden" name="id" value="' + e.id + '"/>' +
                         '<input name="quantity" class="w-25" type="text"> / ' +
                         '<span class="text-red">' + e.quantity + '</span></td>'));
@@ -267,7 +267,7 @@
                 data[formData[i].name] = formData[i].value;
             }
         }
-        callDB("/api/move-items", "put", data,
+        callDB("/api/item-location-move", "put", data,
             function (result) {
                 if(result.status){
                     table.ajax.reload();

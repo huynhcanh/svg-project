@@ -3,6 +3,7 @@ package com.example.svg_project.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "item")
@@ -21,9 +22,6 @@ public class ItemEntity extends BaseEntity{
     @Column(name="remark")
     private String remark;
 
-    @Column(name="quantity")
-    private Integer quantity;
-
     @ManyToOne
     @JoinColumn(name="classificationid")
     private ClassificationEntity classification;
@@ -32,7 +30,6 @@ public class ItemEntity extends BaseEntity{
     @JoinColumn(name="unitid")
     private UnitEntity unit;
 
-    @ManyToOne
-    @JoinColumn(name="locationid")
-    private LocationEntity location;
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+    private List<ItemLocationEntity> itemLocations;
 }

@@ -185,35 +185,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <h3 class="card-body__title">Location: <span id="resultTxtEditLocation"></span></h3>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <input id="warehouseTxtEditLocation" name="warehouse" type="text" class="form-control" placeholder="Warehouse">
-                                        <i class="form-group__bar"></i>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <input id="rackTxtEditLocation" name="rack" type="text" class="form-control" placeholder="Rack">
-                                        <i class="form-group__bar"></i>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <input id="trayTxtEditLocation" name="tray" type="text" class="form-control" placeholder="Tray">
-                                        <i class="form-group__bar"></i>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <input name="quantity" type="number" class="form-control" placeholder="Quantity">
-                                        <i class="form-group__bar"></i>
-                                    </div>
-                                </div>
-                            </div>
                         </form>
                     </div>
                     <div class="modal-footer">

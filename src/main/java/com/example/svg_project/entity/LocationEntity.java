@@ -24,6 +24,6 @@ public class LocationEntity extends BaseEntity{
     @Column(name="tray")
     private String tray;
 
-    @OneToMany(mappedBy = "location", fetch = FetchType.LAZY)
-    private List<ItemEntity> items;
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
+    private List<ItemLocationEntity> itemLocations;
 }

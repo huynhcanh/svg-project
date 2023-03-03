@@ -1,12 +1,14 @@
 package com.example.svg_project.service.impl;
 
 import com.example.svg_project.entity.ItemEntity;
+import com.example.svg_project.entity.ItemLocationEntity;
 import com.example.svg_project.entity.LocationEntity;
 import com.example.svg_project.exception.NotFoundException;
 import com.example.svg_project.exception.ValueExistException;
 import com.example.svg_project.model.mapper.LocationMapper;
 import com.example.svg_project.model.request.AddLocationRequest;
 import com.example.svg_project.model.response.LocationResponse;
+import com.example.svg_project.repository.ItemLocationRepository;
 import com.example.svg_project.repository.ItemRepository;
 import com.example.svg_project.repository.LocationRepository;
 import com.example.svg_project.service.LocationService;
@@ -30,7 +32,7 @@ public class LocationServiceImpl implements LocationService {
     LocationMapper locationMapper;
 
     @Autowired
-    ItemRepository itemRepository;
+    ItemLocationRepository itemLocationRepository;
 
     @Override
     public List<LocationResponse> findAll() {
@@ -63,20 +65,8 @@ public class LocationServiceImpl implements LocationService {
             throw new NotFoundException(ExceptionUtils.notFoundMessage("id = " + idCheck));
         }
 
-        List<Long> listIdDelete = new ArrayList();
-        locationEntities = locationRepository.findByIdIn(ids);
-        for(LocationEntity locationEntity: locationEntities){
-            // set location in all item to null
-            List<ItemEntity> itemEntities = locationEntity.getItems();
-            for(ItemEntity itemEntity: itemEntities){
-                itemEntity.setLocation(null);
-                itemRepository.save(itemEntity);
-            }
-            // add list result
-            listIdDelete.add(locationEntity.getId());
-        }
         // delete list location checked
         locationRepository.deleteByIdIn(ids);
-        return listIdDelete;
+        return ids;
     }
 }

@@ -21,15 +21,9 @@ public class ItemDeleteEntity extends BaseEntity{
     @Column(name="remark")
     private String remark;
 
-    @Column(name="quantity")
-    private Integer quantity;
-
     @Column(name="classificationcode")
     private String classificationCode;
 
     @Column(name="unitcode")
     private String unitCode;
-
-    @Column(name="locationid")
-    private Long locationId;
 }

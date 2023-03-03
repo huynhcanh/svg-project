@@ -14,7 +14,4 @@ public class ItemResponse {
     private String remark;
     private UnitResponse unit;
     private ClassificationResponse classification;
-    private LocationResponse location;
-    private Integer quantity;
-    private String modifiedBy;
 }
