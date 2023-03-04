@@ -4,6 +4,7 @@ import com.example.svg_project.entity.ClassificationEntity;
 import com.example.svg_project.entity.ItemEntity;
 import com.example.svg_project.entity.UnitEntity;
 import com.example.svg_project.exception.NotFoundException;
+import com.example.svg_project.model.excel.ItemExcel;
 import com.example.svg_project.model.request.UpdateItemRequest;
 import com.example.svg_project.model.response.ItemResponse;
 import com.example.svg_project.repository.ClassificationRepository;
@@ -11,11 +12,14 @@ import com.example.svg_project.repository.ItemRepository;
 import com.example.svg_project.repository.LocationRepository;
 import com.example.svg_project.repository.UnitRepository;
 import com.example.svg_project.utils.ExceptionUtils;
+import com.example.svg_project.utils.GenerateUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+
+import static com.example.svg_project.constant.QrConstant.QR_CODE_SIZE_WIDTH;
 
 @Component
 public class ItemMapper {
@@ -59,5 +63,13 @@ public class ItemMapper {
         itemEntity.setUnit(unitEntity);
         itemEntity.setClassification(classificationEntity);
         return itemEntity;
+    }
+
+    public ItemExcel toExcel(ItemEntity entity) {
+        ItemExcel itemExcel = modelMapper.map(entity, ItemExcel.class);
+        itemExcel.setClassificationValue(entity.getClassification().getValue());
+        itemExcel.setUnitValue(entity.getUnit().getValue());
+        //itemExcel.setQr(GenerateUtils.generateQrCode(entity.getId().toString(), QR_CODE_SIZE_WIDTH, QR_CODE_SIZE_WIDTH));
+        return itemExcel;
     }
 }

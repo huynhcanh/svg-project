@@ -30,4 +30,19 @@ public class LocationApi {
     public List<Long> deleteLocations(@RequestBody List<Long> ids) {
         return locationService.deleteLocations(ids);
     }
+
+    @GetMapping("/locations/warehouses")
+    List<String> findAllWarehouse(){
+        return locationService.findAllWarehouse();
+    }
+
+    @GetMapping("/locations/racks/warehouse")
+    List<String> findAllWarehouse(@RequestParam String warehouse){
+        return locationService.findAllRackByWarehouse(warehouse);
+    }
+
+    @GetMapping("/locations/trays/warehouse-rack")
+    List<String> findAllTrayByWarehouseAndRack(@RequestParam String warehouse, @RequestParam String rack){
+        return locationService.findAllTrayByWarehouseAndRack(warehouse, rack);
+    }
 }

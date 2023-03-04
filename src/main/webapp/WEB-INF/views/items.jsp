@@ -209,7 +209,7 @@
                         <th>QR code</th>
                         <th><input type="checkbox" name="select_all" value="1" id="example-select-all"></th>
                         <th>
-                            <button style="margin-left: 20px"type="button" class="btn btn-success">Excel</button>
+                            <button id="exportExcel" style="margin-left: 20px"type="button" class="btn btn-success">Excel</button>
                             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-delete">Delete</button>
                         </th>
                     </tr>
@@ -416,6 +416,28 @@
                 swal(result.data);
             }
         });
+
+    // export excel
+    $('#exportExcel').click(function (e) {
+        // Handle form submission event
+        e.preventDefault();
+        var ids = [];
+        // Iterate over all checkboxes in the table
+        table.$('input[type="checkbox"]').each(function(e, v){
+            if(v.checked){
+                ids.push(v.value);
+            }
+        });
+        if(ids.length != 0){
+            callDB('/api/items/export-excel', 'get', ids, function (result) {
+                if(!result.status){
+                    swal(result.data);
+                }
+            });
+        }else{
+            swal('You have not selected the items');
+        }
+    })
 </script>
 </body>
 </html>

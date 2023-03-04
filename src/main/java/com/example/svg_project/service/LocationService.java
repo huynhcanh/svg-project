@@ -9,4 +9,7 @@ public interface LocationService {
     List<LocationResponse> findAll();
     LocationResponse createLocation(AddLocationRequest addLocationRequest);
     List<Long> deleteLocations(List<Long> ids);
+    List<String> findAllWarehouse();
+    List<String> findAllRackByWarehouse(String warehouse);
+    List<String> findAllTrayByWarehouseAndRack(String warehouse, String rack);
 }
