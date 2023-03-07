@@ -1,36 +1,20 @@
 package com.example.svg_project.utils;
 
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 public class ExcelUtils {
-
-    public static String newFileName(String fileName, int count){
-        StringBuilder rs = new StringBuilder(fileName);
-        rs.insert(fileName.lastIndexOf('.'), "(" + count + ")");
-        return rs.toString();
-    }
-
-    public static String generateFileName(String filename) {
-        String newFilename = filename;
-        int count = 1;
-        File file = new File(newFilename);
-        while (file.exists()) {
-            newFilename = newFileName(filename, count);
-            file = new File(newFilename);
-            count++;
-        }
-        return newFilename;
-    }
 
     public static <T> void exportToExcel(List<T> responses, String[] headers, String sheetName, OutputStream outputStream) throws IOException {
 
@@ -103,5 +87,49 @@ public class ExcelUtils {
 
         // Ghi dữ liệu vào outputStream
         workbook.write(outputStream);
+    }
+
+    public static <T> List<T> mapExcelDataToList(InputStream is, Class<T> clazz) throws IOException {
+        Workbook workbook = WorkbookFactory.create(is);
+        Sheet sheet = workbook.getSheetAt(0);
+
+        List<T> dataList = new ArrayList<>();
+
+        Iterator<Row> rowIterator = sheet.rowIterator();
+        // Skip header row
+        rowIterator.next();
+
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next();
+            T data = null;
+            try {
+                data = clazz.newInstance();
+                Field[] fields = clazz.getDeclaredFields();
+                for (int i = 0; i < fields.length; i++) {
+                    Cell cell = row.getCell(i);
+                    Field field = fields[i];
+                    field.setAccessible(true);
+                    if (cell != null) {
+                        if (field.getType() == String.class) {
+                            String value = cell.getStringCellValue();
+                            field.set(data, value);
+                        } else if (field.getType() == Integer.class || field.getType() == int.class) {
+                            int value = (int) cell.getNumericCellValue();
+                            field.set(data, value);
+                        } else if (field.getType() == Double.class || field.getType() == double.class) {
+                            double value = cell.getNumericCellValue();
+                            field.set(data, value);
+                        }
+                    }
+                }
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            if (data != null) {
+                dataList.add(data);
+            }
+        }
+
+        return dataList;
     }
 }

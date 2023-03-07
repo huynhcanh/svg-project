@@ -1,8 +1,5 @@
 package com.example.svg_project.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 public class FormatUtils {
     public static String formatValue(String value){
         value = value.trim();

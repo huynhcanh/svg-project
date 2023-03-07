@@ -28,7 +28,14 @@
     <div class="card-body">
         <h4 class="card-title">Item</h4>
         <button id="btnAddItem" type="button" class="btn btn-success"
-                data-toggle="modal" data-target="#modal-add">Add</button>
+                data-toggle="modal" data-target="#modal-add">Add by web</button>
+        <br> <br>
+        <div>
+            <label for="">Add by excel</label> <br>
+            <input id="inputAddItemByExcel" type="file" accept=".xlsx, .xls, .csv" class="btn btn-success" />
+            <button id="btnAddItemByExcel" type="button" class="btn btn-success">Add by excel</button>
+        </div>
+
         <%-- modal add --%>
         <div class="modal fade" id="modal-add" tabindex="-1">
             <div class="modal-dialog">
@@ -442,7 +449,29 @@
         }else{
             swal('You have not selected the items');
         }
-    })
+    });
+
+    // Add by excel
+    $('#btnAddItemByExcel').click(function() {
+        var file = $('#inputAddItemByExcel').prop('files')[0];
+        var formData = new FormData();
+        formData.append('file', file);
+
+        $.ajax({
+            url: '/api/items/import-excel',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                table.ajax.reload();
+                swal("Add items!", "You have successfully items!", "success");
+            },
+            error: function(xhr, status, error) {
+                swal(xhr.responseText);
+            }
+        });
+    });
 </script>
 </body>
 </html>

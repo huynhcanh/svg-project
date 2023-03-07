@@ -12,4 +12,5 @@ public interface LocationService {
     List<String> findAllWarehouse();
     List<String> findAllRackByWarehouse(String warehouse);
     List<String> findAllTrayByWarehouseAndRack(String warehouse, String rack);
+    void exportExcelLocations(List<Long> ids);
 }

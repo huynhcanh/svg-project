@@ -4,6 +4,7 @@ import com.example.svg_project.entity.ItemEntity;
 import com.example.svg_project.entity.ItemLocationEntity;
 import com.example.svg_project.entity.LocationEntity;
 import com.example.svg_project.exception.NotFoundException;
+import com.example.svg_project.model.excel.AddItemExcelRequest;
 import com.example.svg_project.model.excel.ItemExcel;
 import com.example.svg_project.model.mapper.ItemDeleteMapper;
 import com.example.svg_project.model.mapper.ItemMapper;
@@ -20,9 +21,11 @@ import com.example.svg_project.service.ItemService;
 import com.example.svg_project.utils.EntityUtils;
 import com.example.svg_project.utils.ExcelUtils;
 import com.example.svg_project.utils.ExceptionUtils;
+import com.example.svg_project.utils.GenerateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -110,7 +113,7 @@ public class ItemServiceImpl implements ItemService {
         String downloadDirPath = System.getProperty("user.home") + File.separator + "Downloads" + File.separator;
         OutputStream outputStream = null;
         try {
-            String fileName = ExcelUtils.generateFileName(downloadDirPath + "items.xlsx");
+            String fileName = GenerateUtils.generateFileName(downloadDirPath + "items.xlsx");
             outputStream = new FileOutputStream(fileName);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -119,6 +122,22 @@ public class ItemServiceImpl implements ItemService {
             ExcelUtils.exportToExcel(items, headers, sheetName, outputStream);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    @Transactional
+    public void loadAndSaveExcelItems(MultipartFile file) {
+        List<AddItemExcelRequest> items = null;
+        try {
+            items = ExcelUtils.mapExcelDataToList(file.getInputStream(), AddItemExcelRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(items != null){
+            for(AddItemExcelRequest item: items){
+                itemRepository.save(itemMapper.toEntity(item));
+            }
         }
     }
 }

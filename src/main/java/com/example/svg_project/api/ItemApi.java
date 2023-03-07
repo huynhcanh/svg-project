@@ -5,7 +5,9 @@ import com.example.svg_project.model.response.ItemResponse;
 import com.example.svg_project.service.ItemService;
 import com.example.svg_project.utils.GenerateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import javax.validation.Valid;
@@ -47,5 +49,13 @@ public class ItemApi {
     @GetMapping("/items/export-excel")
     public void exportExcelItems(@RequestParam List<Long> ids) {
         itemService.exportExcelItems(ids);
+    }
+
+    @PostMapping("/items/import-excel")
+    public void loadAndSaveExcelItems(@RequestParam("file") MultipartFile file) {
+        if (!file.getOriginalFilename().endsWith(".xlsx") && !file.getOriginalFilename().endsWith(".xls")) {
+            return;
+        }
+        itemService.loadAndSaveExcelItems(file);
     }
 }

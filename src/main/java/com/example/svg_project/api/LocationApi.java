@@ -45,4 +45,9 @@ public class LocationApi {
     List<String> findAllTrayByWarehouseAndRack(@RequestParam String warehouse, @RequestParam String rack){
         return locationService.findAllTrayByWarehouseAndRack(warehouse, rack);
     }
+
+    @GetMapping("/locations/export-excel")
+    public void exportExcelLocations(@RequestParam List<Long> ids) {
+        locationService.exportExcelLocations(ids);
+    }
 }

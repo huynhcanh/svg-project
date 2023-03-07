@@ -4,6 +4,7 @@ import com.example.svg_project.entity.ClassificationEntity;
 import com.example.svg_project.entity.ItemEntity;
 import com.example.svg_project.entity.UnitEntity;
 import com.example.svg_project.exception.NotFoundException;
+import com.example.svg_project.model.excel.AddItemExcelRequest;
 import com.example.svg_project.model.excel.ItemExcel;
 import com.example.svg_project.model.request.UpdateItemRequest;
 import com.example.svg_project.model.response.ItemResponse;
@@ -71,5 +72,22 @@ public class ItemMapper {
         itemExcel.setUnitValue(entity.getUnit().getValue());
         itemExcel.setQr(GenerateUtils.generateQrCode(entity.getId().toString(), QR_CODE_SIZE_WIDTH_EXCEL, QR_CODE_SIZE_HEIGHT_EXCEL));
         return itemExcel;
+    }
+
+    public ItemEntity toEntity(AddItemExcelRequest addItemExcelRequest) {
+        ClassificationEntity classificationEntity =
+                classificationRepository.findByCode(addItemExcelRequest.getClassificationCode());
+        if(classificationEntity == null){
+            throw new NotFoundException(ExceptionUtils.notFoundMessage("classification code"));
+        }
+        UnitEntity unitEntity =
+                unitRepository.findByCode(addItemExcelRequest.getUnitCode());
+        if(unitEntity == null){
+            throw new NotFoundException(ExceptionUtils.notFoundMessage("unit code"));
+        }
+        ItemEntity entity = modelMapper.map(addItemExcelRequest, ItemEntity.class);
+        entity.setClassification(classificationEntity);
+        entity.setUnit(unitEntity);
+        return entity;
     }
 }

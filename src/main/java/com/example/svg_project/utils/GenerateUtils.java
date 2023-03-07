@@ -9,6 +9,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,5 +53,23 @@ public class GenerateUtils {
 //            }
 //        }
 //        return image;
+    }
+
+    public static String newFileName(String fileName, int count){
+        StringBuilder rs = new StringBuilder(fileName);
+        rs.insert(fileName.lastIndexOf('.'), "(" + count + ")");
+        return rs.toString();
+    }
+
+    public static String generateFileName(String filename) {
+        String newFilename = filename;
+        int count = 1;
+        File file = new File(newFilename);
+        while (file.exists()) {
+            newFilename = newFileName(filename, count);
+            file = new File(newFilename);
+            count++;
+        }
+        return newFilename;
     }
 }
