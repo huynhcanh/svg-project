@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-import static com.example.svg_project.constant.QrConstant.QR_CODE_SIZE_WIDTH;
+import static com.example.svg_project.constant.QrConstant.*;
 
 @Component
 public class ItemMapper {
@@ -69,7 +69,7 @@ public class ItemMapper {
         ItemExcel itemExcel = modelMapper.map(entity, ItemExcel.class);
         itemExcel.setClassificationValue(entity.getClassification().getValue());
         itemExcel.setUnitValue(entity.getUnit().getValue());
-        //itemExcel.setQr(GenerateUtils.generateQrCode(entity.getId().toString(), QR_CODE_SIZE_WIDTH, QR_CODE_SIZE_WIDTH));
+        itemExcel.setQr(GenerateUtils.generateQrCode(entity.getId().toString(), QR_CODE_SIZE_WIDTH_EXCEL, QR_CODE_SIZE_HEIGHT_EXCEL));
         return itemExcel;
     }
 }

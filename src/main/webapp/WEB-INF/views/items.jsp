@@ -40,7 +40,7 @@
                         <form action="" id="formSubmitAddItem">
                             <div class="row">
                                 <div class="col-sm-6">
-                                    <h3 class="card-body__title">Item</h3>
+                                    <h3 class="card-body__title">Classification</h3>
                                     <div class="form-group">
                                         <div class="select">
                                             <select name="classificationCode" id="classificationSelectAddItem" class="form-control">
@@ -80,24 +80,30 @@
                             </div>
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <h3 class="card-body__title">Location: <span id="resultTxtAddLocation"></span></h3>
+                                    <h3 class="card-body__title">Location:</h3>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <input id="warehouseTxtAddLocation" name="warehouse" type="text" class="form-control" placeholder="Warehouse">
-                                        <i class="form-group__bar"></i>
+                                        <div class="select">
+                                            <select name="warehouse" id="warehouseSelectAddItem" class="form-control">
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <input id="rackTxtAddLocation" name="rack" type="text" class="form-control" placeholder="Rack">
-                                        <i class="form-group__bar"></i>
+                                        <div class="select">
+                                            <select name="rack" id="rackSelectAddItem" class="form-control">
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <input id="trayTxtAddLocation" name="tray" type="text" class="form-control" placeholder="Tray">
-                                        <i class="form-group__bar"></i>
+                                        <div class="select">
+                                            <select name="tray" id="traySelectAddItem" class="form-control">
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
@@ -147,7 +153,7 @@
                             <input type="hidden" id="id" name="id"/>
                             <div class="row">
                                 <div class="col-sm-6">
-                                    <h3 class="card-body__title">Item</h3>
+                                    <h3 class="card-body__title">Classification</h3>
                                     <div class="form-group">
                                         <div class="select">
                                             <select id="classificationSelectEditItem" name="classificationCode" class="form-control">
@@ -293,11 +299,13 @@
                                 {
                                     selectId: '#classificationSelectEditItem',
                                     api: '/api/classifications',
+                                    nameSelect: 'Classification',
                                     selected: result.data.classification
                                 },
                                 {
                                     selectId: '#unitSelectEditItem',
                                     api: '/api/units',
+                                    nameSelect: 'Unit',
                                     selected: result.data.unit
                                 }
                             );
@@ -334,44 +342,43 @@
         });
     });
 
-    function myResult(array){
-        for(var x of array){
-            if(!x.val()) return '';
-        }
-        return array.map(function (v) {
-            return v.val();
-        }).join('-');
-    }
-
-    function keyUpEvent(elements, index, resultElement){
-        elements[index].keyup(function (e){
-            resultElement.text(myResult(elements));
-        });
-    }
-
     // open add modal
     $('#btnAddItem').click(function (e) {
         // reset all input in form
         $('#formSubmitAddItem').trigger('reset');
-        // handle location
-        var warehouseTxtAddLocation =  $('#warehouseTxtAddLocation');
-        var rackTxtAddLocation =  $('#rackTxtAddLocation');
-        var trayTxtAddLocation =  $('#trayTxtAddLocation');
-        var resultTxtAddLocation = $('#resultTxtAddLocation');
-        var elements = [warehouseTxtAddLocation, rackTxtAddLocation, trayTxtAddLocation];
-        elements.forEach(function (v, i) {
-            keyUpEvent(elements, i, resultTxtAddLocation);
-        });
-        resultTxtAddLocation.text('');
 
         // load list classification and recss
-        loadSelect('#classificationSelectAddItem','/api/classifications');
+        loadSelect('#classificationSelectAddItem','/api/classifications', 'Classification');
 
         // load list unit
-        loadSelect('#unitSelectAddItem','/api/units');
+        loadSelect('#unitSelectAddItem','/api/units', 'Unit');
+
+        // load list warehouse
+        loadSelect('#warehouseSelectAddItem','/api/locations/warehouses', 'Warehouse');
     });
 
-    handleClick("#formSubmitAddItem", "#btnAddItemSave", "/api/items", "post",
+    $('#warehouseSelectAddItem').change(function() {
+        var warehouse = $(this).val();
+        if(warehouse){
+            loadSelect('#rackSelectAddItem','/api/locations/racks/warehouse?warehouse='+ warehouse , 'Rack');
+        }
+        else {
+            $('#rackSelectAddItem').empty();
+        }
+        $('#traySelectAddItem').empty();
+    });
+
+    $('#rackSelectAddItem').change(function() {
+        var warehouse = $('#warehouseSelectAddItem').val();
+        var rack = $(this).val();
+        if(rack){
+            loadSelect('#traySelectAddItem','/api/locations/trays/' +
+                'warehouse-rack?warehouse=' + warehouse + '&rack=' + rack, 'Tray');
+        }
+        else $('#traySelectAddItem').empty();
+    });
+
+    handleClick("#formSubmitAddItem", "#btnAddItemSave", "/api/item-location", "post",
         function (result) {
             if(result.status){
                 table.ajax.reload();
@@ -428,12 +435,10 @@
                 ids.push(v.value);
             }
         });
+
+        var apiParams = ids.join(',');
         if(ids.length != 0){
-            callDB('/api/items/export-excel', 'get', ids, function (result) {
-                if(!result.status){
-                    swal(result.data);
-                }
-            });
+            callDB('/api/items/export-excel?ids=' + apiParams, 'get', null);
         }else{
             swal('You have not selected the items');
         }

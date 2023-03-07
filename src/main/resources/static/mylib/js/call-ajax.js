@@ -6,16 +6,20 @@ function callDB(urlApi, type, data, cb) {
         data: JSON.stringify(data),
         dataType: 'json',
         success: function (result) {
-            cb({
-                status: true,
-                data: result
-            });
+            if(typeof cb === 'function'){
+                cb({
+                    status: true,
+                    data: result
+                });
+            }
         },
         error: function (xhr) {
-            cb({
-                status: false,
-                data: JSON.parse(xhr.responseText).message
-            });
+            if(typeof cb === 'function'){
+                cb({
+                    status: false,
+                    data: JSON.parse(xhr.responseText).message
+                });
+            }
         }
     });
 }
@@ -36,17 +40,29 @@ function handleClick(idForm, idBtn, urlApi, type, cb){
     });
 }
 
-function loadSelect(idSelect, api, codeSelected){
+function loadSelect(idSelect, api, optionName, codeSelected){
     callDB(api, "get", null, function (result) {
         var array = result.data;
-        $(idSelect).empty().append('<option value="">Select an Option</option>')
-        for(var item of array){
-            if(codeSelected && codeSelected === item.code){
-                $(idSelect).append('<option selected value="' + item.code + '">'
-                    + item.value + '</option>');
-            }else{
-                $(idSelect).append('<option value="' + item.code + '">'
-                    + item.value + '</option>');
+        $(idSelect).empty().append('<option value="">---- ' + optionName + ' ----</option>');
+        if(array){
+            for(var item of array){
+                if(typeof item === 'object'){
+                    if(codeSelected && codeSelected === item.code){
+                        $(idSelect).append('<option selected value="' + item.code + '">'
+                            + item.value + '</option>');
+                    }else{
+                        $(idSelect).append('<option value="' + item.code + '">'
+                            + item.value + '</option>');
+                    }
+                }else{
+                    if(codeSelected){
+                        $(idSelect).append('<option selected value="' + item + '">'
+                            + item + '</option>');
+                    }else{
+                        $(idSelect).append('<option value="' + item + '">'
+                            + item + '</option>');
+                    }
+                }
             }
         }
         // custom template: set color for option element

@@ -65,12 +65,7 @@ public class ItemLocationServiceImpl implements ItemLocationService {
         LocationEntity locationEntity = locationRepository.findByWarehouseAndRackAndTray(
                 warehouse, rack, tray);
         if(locationEntity == null){
-            locationEntity = LocationEntity.builder()
-                    .warehouse(warehouse)
-                    .rack(rack)
-                    .tray(tray)
-                    .build();
-            locationEntity = locationRepository.save(locationEntity);
+            throw new NotFoundException(ExceptionUtils.notFoundMessage("This location"));
         }
 
         ItemEntity itemEntity = modelMapper.map(addItemLocationRequest, ItemEntity.class);

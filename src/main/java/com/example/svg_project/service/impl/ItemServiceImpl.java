@@ -110,7 +110,8 @@ public class ItemServiceImpl implements ItemService {
         String downloadDirPath = System.getProperty("user.home") + File.separator + "Downloads" + File.separator;
         OutputStream outputStream = null;
         try {
-            outputStream = new FileOutputStream(downloadDirPath + "items.xlsx");
+            String fileName = ExcelUtils.generateFileName(downloadDirPath + "items.xlsx");
+            outputStream = new FileOutputStream(fileName);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

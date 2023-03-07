@@ -1,17 +1,37 @@
 package com.example.svg_project.utils;
 
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.List;
 
 public class ExcelUtils {
+
+    public static String newFileName(String fileName, int count){
+        StringBuilder rs = new StringBuilder(fileName);
+        rs.insert(fileName.lastIndexOf('.'), "(" + count + ")");
+        return rs.toString();
+    }
+
+    public static String generateFileName(String filename) {
+        String newFilename = filename;
+        int count = 1;
+        File file = new File(newFilename);
+        while (file.exists()) {
+            newFilename = newFileName(filename, count);
+            file = new File(newFilename);
+            count++;
+        }
+        return newFilename;
+    }
+
     public static <T> void exportToExcel(List<T> responses, String[] headers, String sheetName, OutputStream outputStream) throws IOException {
 
         // Tạo workbook mới
@@ -51,18 +71,29 @@ public class ExcelUtils {
                         // Nếu là ảnh QR, thêm vào sheet
                         BufferedImage qrCode = (BufferedImage) value;
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        ImageIO.setUseCache(false);
                         ImageIO.write(qrCode, "png", baos);
                         int pictureIdx = workbook.addPicture(baos.toByteArray(), Workbook.PICTURE_TYPE_PNG);
 
-                        XSSFClientAnchor anchor = new XSSFClientAnchor();
-                        anchor.setCol1(j); // cột chứa ảnh
-                        anchor.setRow1(i + 1); // dòng chứa ảnh
+                        CreationHelper helper = workbook.getCreationHelper();
+
+                        // Set column width
+                        sheet.setColumnWidth(j, 15 * 256);
+
+                        // Set row height
+                        row.setHeight((short) (qrCode.getHeight() * 15));
+
+                        // Create drawing and anchor
+                        Drawing drawing = sheet.createDrawingPatriarch();
+                        ClientAnchor anchor = helper.createClientAnchor();
+                        anchor.setCol1(j);
+                        anchor.setRow1(i + 1);
                         anchor.setCol2(j + 1);
                         anchor.setRow2(i + 2);
 
-                        XSSFDrawing drawing = sheet.createDrawingPatriarch();
-                        XSSFPicture picture = drawing.createPicture(anchor, pictureIdx);
-                        picture.resize(); // thiết lập kích thước ảnh
+                        // Create picture and resize
+                        Picture picture = drawing.createPicture(anchor, pictureIdx);
+                        picture.resize();
                     } else {
                         cell.setCellValue(value.toString());
                     }

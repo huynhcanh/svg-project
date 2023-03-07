@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.awt.image.BufferedImage;
 
-import static com.example.svg_project.constant.QrConstant.QR_CODE_SIZE_WIDTH;
+import static com.example.svg_project.constant.QrConstant.QR_CODE_SIZE_HEIGHT_WEB;
+import static com.example.svg_project.constant.QrConstant.QR_CODE_SIZE_WIDTH_WEB;
 
 @RestController
 @RequestMapping("/api")
@@ -24,6 +25,6 @@ public class QrApi {
 
     @GetMapping(value = "/generate-qr")
     public BufferedImage generateQr(@RequestParam("id") String id) {
-        return GenerateUtils.generateQrCode(id, QR_CODE_SIZE_WIDTH, QR_CODE_SIZE_WIDTH);
+        return GenerateUtils.generateQrCode(id, QR_CODE_SIZE_WIDTH_WEB, QR_CODE_SIZE_HEIGHT_WEB);
     }
 }

@@ -18,13 +18,13 @@ function convertObjectToForm(idform, object, ...selects){
     $(idform).find('[name]').each(function (i, e) {
         $(e).val(findValue(e.name, object));
     });
-    selects.forEach(function (value, index) {
+    selects.forEach(function (select, index) {
         // load list items and recss
-        if(value.selected !== null){
-            loadSelect(value.selectId,value.api,
-                value.selected.code);
+        if(select.selected !== null){
+            loadSelect(select.selectId, select.api, select.nameSelect,
+                select.selected.code);
         }else{
-            loadSelect(value.selectId,value.api);
+            loadSelect(select.selectId, select.api, select.nameSelect);
         }
     });
 }

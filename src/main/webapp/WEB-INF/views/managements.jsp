@@ -38,24 +38,30 @@
                         <form action="" id="formSubmitMoveItem">
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <h3 class="card-body__title">Move to location: <span id="resultTxtAddLocation"></span></h3>
+                                    <h3 class="card-body__title">Move to location:</h3>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <input id="warehouseTxtAddLocation" name="warehouse" type="text" class="form-control" placeholder="Warehouse">
-                                        <i class="form-group__bar"></i>
+                                        <div class="select">
+                                            <select name="warehouse" id="warehouseSelectMoveItem" class="form-control">
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <input id="rackTxtAddLocation" name="rack" type="text" class="form-control" placeholder="Rack">
-                                        <i class="form-group__bar"></i>
+                                        <div class="select">
+                                            <select name="rack" id="rackSelectMoveItem" class="form-control">
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <input id="trayTxtAddLocation" name="tray" type="text" class="form-control" placeholder="Tray">
-                                        <i class="form-group__bar"></i>
+                                        <div class="select">
+                                            <select name="tray" id="traySelectMoveItem" class="form-control">
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -184,36 +190,8 @@
         });
     });
 
-    // show result location
-    function myResult(array){
-        for(var x of array){
-            if(!x.val()) return '';
-        }
-        return array.map(function (v) {
-            return v.val();
-        }).join('-');
-    }
-
-    function keyUpEvent(elements, index, resultElement){
-        elements[index].keyup(function (e){
-            resultElement.text(myResult(elements));
-        });
-    }
-
     // Click move button
     $('#btnMoveItem').click(function (e) {
-        // reset all input in form
-        $('#formSubmitMoveItem').trigger('reset');
-        // handle location
-        var warehouseTxtAddLocation =  $('#warehouseTxtAddLocation');
-        var rackTxtAddLocation =  $('#rackTxtAddLocation');
-        var trayTxtAddLocation =  $('#trayTxtAddLocation');
-        var resultTxtAddLocation = $('#resultTxtAddLocation');
-        var elements = [warehouseTxtAddLocation, rackTxtAddLocation, trayTxtAddLocation];
-        elements.forEach(function (v, i) {
-            keyUpEvent(elements, i, resultTxtAddLocation);
-        });
-        resultTxtAddLocation.text('');
 
         // Handle form submission event
         e.preventDefault();
@@ -246,6 +224,33 @@
                 swal(result.data);
             }
         });
+
+        // reset all input in form
+        $('#formSubmitMoveItem').trigger('reset');
+
+        // load list warehouse
+        loadSelect('#warehouseSelectMoveItem','/api/locations/warehouses', 'Warehouse');
+    });
+
+    $('#warehouseSelectMoveItem').change(function() {
+        var warehouse = $(this).val();
+        if(warehouse){
+            loadSelect('#rackSelectMoveItem','/api/locations/racks/warehouse?warehouse='+ warehouse , 'Rack');
+        }
+        else {
+            $('#rackSelectMoveItem').empty();
+        }
+        $('#traySelectMoveItem').empty();
+    });
+
+    $('#rackSelectMoveItem').change(function() {
+        var warehouse = $('#warehouseSelectMoveItem').val();
+        var rack = $(this).val();
+        if(rack){
+            loadSelect('#traySelectMoveItem','/api/locations/trays/' +
+                'warehouse-rack?warehouse=' + warehouse + '&rack=' + rack, 'Tray');
+        }
+        else $('#traySelectMoveItem').empty();
     });
 
 

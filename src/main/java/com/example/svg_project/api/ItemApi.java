@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.imageio.ImageIO;
 import javax.validation.Valid;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.awt.image.WritableRaster;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -42,14 +45,7 @@ public class ItemApi {
     }
 
     @GetMapping("/items/export-excel")
-    public void exportExcelItems(@RequestBody List<Long> ids) {
-        BufferedImage qrCode = GenerateUtils.generateQrCode("1", 200, 200);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
-            ImageIO.write(qrCode, "png", baos);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //itemService.exportExcelItems(ids);
+    public void exportExcelItems(@RequestParam List<Long> ids) {
+        itemService.exportExcelItems(ids);
     }
 }
