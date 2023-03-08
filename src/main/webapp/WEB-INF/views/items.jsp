@@ -221,7 +221,7 @@
                         <th>Remark</th>
                         <th>QR code</th>
                         <th><input type="checkbox" name="select_all" value="1" id="example-select-all"></th>
-                        <th>
+                        <th style="width: 200px !important;">
                             <button id="exportExcel" style="margin-left: 20px"type="button" class="btn btn-success">Excel</button>
                             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-delete">Delete</button>
                         </th>
@@ -284,6 +284,7 @@
                 },
                 {
                     data: 'id',
+                    width: 200,
                     'render': function (data, type, full, meta){
                         return '<button value="'+data+'" type="button" class="btnEditItem btn btn-info"' +
                             'data-toggle="modal" data-target="#modal-edit">Edit</button>';
@@ -353,38 +354,89 @@
 
     //Thêm các nút sort và filter vào header của 6 cột đầu tiên
     $('#data-table-item th:lt(6)').each(function(i) {
-        $(this).append(' <br><i class="fas fa-sort"></i>&ensp;<i class="fas fa-filter filter-icon"></i>');
+        $(this).append(' <br><i class="fas fa-sort sort-icon"></i>&ensp;<i class="fas fa-filter filter-icon"></i>');
     });
 
-    var isFilterListOpen = false;
-    var $filterContainer = null;
+    function fomatKey(index) {
+        if(index == '0') return "classification";
+        else if(index == '1') return "id";
+        else if(index == '2') return "name";
+        else if(index == '3') return "unit";
+        else if(index == '4') return "color";
+        else if(index == '5') return "remark";
+    }
+
+    function mergeSortAndFilter(sorts, filters) {
+        let result = {};
+        Object.keys(sorts).forEach(key => {
+            result[key] = { sort: sorts[key], filter: filters[key] || null };
+        });
+        Object.keys(filters).forEach(key => {
+            if (!sorts.hasOwnProperty(key)) {
+                result[key] = { sort: null, filter: filters[key].length > 0 ? filters[key] : null };
+            }
+        });
+        return result;
+    }
+
+    var isFilterListOpen = [false, false, false, false, false, false];
     var $filterList = null;
+    var $filterContainer = null;
+    var apis = [
+        "/api/items/distinct-classifications",
+        "/api/items/distinct-ids",
+        "/api/items/distinct-names",
+        "/api/items/distinct-units",
+        "/api/items/distinct-colors",
+        "/api/items/distinct-remarks"
+    ];
+
+    var filters = {};
+    var sorts = {};
+
     $('.filter-icon').click(function() {
         const index = $('.filter-icon').index(this);
-        console.log(index);
-        if (!isFilterListOpen) {
-            isFilterListOpen = true;
+        if (!isFilterListOpen[index]) {
+            isFilterListOpen[index] = true;
 
-            //if($filterContainer === null){
-                var data = [
-                    { id: '1', text: 'A' },
-                    { id: '2', text: 'B' },
-                    { id: '3', text: 'C' },
-                ];
+            if(!$(this).next().hasClass('filter-container')){
 
                 // Tạo danh sách checkbox
                 $filterList = $('<div>').addClass('filter-list');
-                $filterList.css({"position": "absolute", "min-width": "40","left": "40", "top": "-13", "background": "black"});
-                data.forEach(function(item) {
-                    var $label = $('<label>').text(item.text);
-                    var $checkbox = $('<input>').attr({
-                        type: 'checkbox',
-                        value: item.id
+                $filterList.css({"position": "absolute", "min-width": "120","left": "40", "top": "-13", "background": "black"});
+
+                var data = null;
+
+                if(index == 0 || index == 3){
+                    callDB(apis[index], "GET", null, function(result){
+                        data = result.data;
+                        data.forEach(function(item) {
+                            var $label = $('<label>').text(item.value);
+                            var $checkbox = $('<input>').attr({
+                                type: 'checkbox',
+                                value: item.code
+                            });
+                            $label.prepend($checkbox);
+                            $filterList.append($label);
+                            $filterList.append('<br>');
+                        });
                     });
-                    $label.prepend($checkbox);
-                    $filterList.append($label);
-                    $filterList.append('<br>');
-                });
+                }
+                else if(index == 1 || index == 2 || index == 4 || index == 5){
+                    callDB(apis[index], "GET", null, function(result){
+                        data = result.data;
+                        data.forEach(function(item) {
+                            var $label = $('<label>').text(item);
+                            var $checkbox = $('<input>').attr({
+                                type: 'checkbox',
+                                value: item
+                            });
+                            $label.prepend($checkbox);
+                            $filterList.append($label);
+                            $filterList.append('<br>');
+                        });
+                    });
+                }
 
                 // Hiển thị danh sách checkbox
                 $filterContainer = $('<div>').addClass('filter-container').append($filterList);
@@ -397,17 +449,37 @@
                     var checkedValues = $filterList.find('input:checked').map(function() {
                         return $(this).val();
                     }).get();
-                    console.log(checkedValues);
+                    filters[fomatKey(index)] = checkedValues;
+                    var object = mergeSortAndFilter(sorts, filters);
+                    callDB("/api/items/sort-filter", "POST", object, function(result){
+                        if(result.status){
+                            table.ajax.reload();
+                            console.log(result.data);
+                        }
+                    });
                 });
-            //}
+            }
 
-            $filterList.show();
+            $(this).next().show();
         } else {
-            isFilterListOpen = false;
+            isFilterListOpen[index] = false;
             // Ẩn danh sách checkbox
-            console.log(123);
-            $filterList.hide();
+            console.log('close'+index);
+            $(this).next().hide();
         }
+    });
+
+    $('.sort-icon').click(function(){
+        const index = $('.sort-icon').index(this);
+        // Cập nhật trạng thái sort của title hiện tại
+        sorts[fomatKey(index)] = sorts[fomatKey(index)] === 'asc' ? 'desc' : 'asc';
+        var object = mergeSortAndFilter(sorts, filters);
+        callDB("/api/items/sort-filter", "POST", object, function(result){
+            if(result.status){
+                table.ajax.reload();
+                console.log(result.data);
+            }
+        });
     });
 
     // open add modal

@@ -22,4 +22,17 @@ public class FormatUtils {
         }
         return s.toString();
     }
+
+    public static String arrayToString(Object[] arr){
+        StringBuilder sb = new StringBuilder();
+        sb.append("'");
+        sb.append(arr[0]);
+        for (int i = 1; i < arr.length; i++) {
+            sb.append("', '");
+            sb.append(arr[i]);
+        }
+        sb.append("'");
+        String result = sb.toString();
+        return result;
+    }
 }

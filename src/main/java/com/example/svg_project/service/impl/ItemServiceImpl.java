@@ -10,9 +10,12 @@ import com.example.svg_project.model.mapper.ItemDeleteMapper;
 import com.example.svg_project.model.mapper.ItemMapper;
 import com.example.svg_project.model.request.AddItemLocationRequest;
 import com.example.svg_project.model.request.MoveItemRequest;
+import com.example.svg_project.model.request.SortAndFilterItemRequest;
 import com.example.svg_project.model.request.UpdateItemRequest;
+import com.example.svg_project.model.response.ClassificationResponse;
 import com.example.svg_project.model.response.ItemLocationResponse;
 import com.example.svg_project.model.response.ItemResponse;
+import com.example.svg_project.model.response.UnitResponse;
 import com.example.svg_project.repository.ItemDeleteRepository;
 import com.example.svg_project.repository.ItemLocationRepository;
 import com.example.svg_project.repository.ItemRepository;
@@ -139,5 +142,49 @@ public class ItemServiceImpl implements ItemService {
                 itemRepository.save(itemMapper.toEntity(item));
             }
         }
+    }
+
+    @Override
+    public List<ClassificationResponse> findDistinctClassifications() {
+        return itemRepository.findDistinctClassifications();
+    }
+
+    @Override
+    public List<Long> findDistinctIds() {
+        return itemRepository.findDistinctIds();
+    }
+
+    @Override
+    public List<String> findDistinctNames() {
+        return itemRepository.findDistinctNames();
+    }
+
+    @Override
+    public List<UnitResponse> findDistinctUnits() {
+        return itemRepository.findDistinctUnits();
+    }
+
+    @Override
+    public List<String> findDistinctColors() {
+        return itemRepository.findDistinctColors();
+    }
+
+    @Override
+    public List<String> findDistinctRemarks() {
+        return itemRepository.findDistinctRemarks();
+    }
+
+    @Override
+    public List<ItemResponse> sortAndFilterItems(SortAndFilterItemRequest sortAndfilter) {
+        List<ItemEntity> itemEntities = null;
+//        if(sortAndfilter == null){
+//            System.out.println("khong sort va filter");
+//            itemEntities = itemRepository.findAll();
+//        }else{
+//            System.out.println(" sort va filter");
+//            itemEntities = itemRepository.sortAndFilterItems(sortAndfilter);
+//        }
+        itemEntities = itemRepository.sortAndFilterItems(sortAndfilter);
+        return itemEntities.stream().map(item->itemMapper.toResponse(item)).collect(Collectors.toList());
     }
 }

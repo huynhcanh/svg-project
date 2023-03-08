@@ -1,22 +1,16 @@
 package com.example.svg_project.api;
 
+import com.example.svg_project.model.request.SortAndFilterItemRequest;
 import com.example.svg_project.model.request.UpdateItemRequest;
+import com.example.svg_project.model.response.ClassificationResponse;
 import com.example.svg_project.model.response.ItemResponse;
+import com.example.svg_project.model.response.UnitResponse;
 import com.example.svg_project.service.ItemService;
-import com.example.svg_project.utils.GenerateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
 import javax.validation.Valid;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.awt.image.WritableRaster;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -58,4 +52,40 @@ public class ItemApi {
         }
         itemService.loadAndSaveExcelItems(file);
     }
+
+    @GetMapping("/items/distinct-classifications")
+    public List<ClassificationResponse> distinctClassifications() {
+        return itemService.findDistinctClassifications();
+    }
+
+    @GetMapping("/items/distinct-ids")
+    public List<Long> findDistinctIds() {
+        return itemService.findDistinctIds();
+    }
+
+    @GetMapping("/items/distinct-names")
+    public List<String> findDistinctNames() {
+        return itemService.findDistinctNames();
+    }
+
+    @GetMapping("/items/distinct-colors")
+    public List<String> findDistinctColors() {
+        return itemService.findDistinctColors();
+    }
+
+    @GetMapping("/items/distinct-remarks")
+    public List<String> findDistinctRemarks() {
+        return itemService.findDistinctRemarks();
+    }
+
+    @GetMapping("/items/distinct-units")
+    public List<UnitResponse> distinctUnits() {
+        return itemService.findDistinctUnits();
+    }
+
+    @PostMapping("/items/sort-filter")
+    public List<ItemResponse> sortAndFilterItems(@RequestBody SortAndFilterItemRequest sortAndfilter) {
+        return itemService.sortAndFilterItems(sortAndfilter);
+    }
+
 }

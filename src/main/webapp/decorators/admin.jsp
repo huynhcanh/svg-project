@@ -13,7 +13,8 @@
     <link rel="stylesheet" href="/vendors/bower_components/jquery.scrollbar/jquery.scrollbar.css">
     <link rel="stylesheet" href="/vendors/bower_components/fullcalendar/dist/fullcalendar.min.css">
     <!-- App styles -->
-    <link rel="stylesheet" href="/css/app.min.css">
+<%--    <link rel="stylesheet" href="/css/app.min.css">--%>
+    <link rel="stylesheet" href="/css/app.min.css2.css">
     <!-- Demo -->
     <link rel="stylesheet" href="/demo/css/demo.css">
 
@@ -28,7 +29,8 @@
     <%-- select2 --%>
     <script src="/vendors/bower_components/select2/dist/js/select2.full.min.js"></script>
 </head>
-<body data-sa-theme="1">
+<%-- nếu <link rel="stylesheet" href="/css/app.min.css"> thì <body data-sa-theme="1"> --%>
+<body data-sa-theme="4">
     <main class="main">
         <!-- page loader -->
         <%@ include file="/common/page-loader.jsp" %>
