@@ -37,4 +37,7 @@ public class ItemLocationApi {
     public List<ItemLocationResponse> moveItemLocations(@Valid @RequestBody MoveItemRequest moveItemRequest) {
         return itemLocationService.moveItemLocations(moveItemRequest);
     }
+
+    //@PutMapping("/item-location-history")
+
 }

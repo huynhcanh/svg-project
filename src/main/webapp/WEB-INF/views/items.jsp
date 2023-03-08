@@ -6,6 +6,7 @@
 </head>
 <body>
 <link rel="stylesheet" href="/mylib/css/show-img-modal.css">
+
 <header class="content__title">
     <h1>DATA TABLES</h1>
 
@@ -31,7 +32,7 @@
                 data-toggle="modal" data-target="#modal-add">Add by web</button>
         <br> <br>
         <div>
-            <label for="">Add by excel</label> <br>
+            <label>Add by excel</label> <br>
             <input id="inputAddItemByExcel" type="file" accept=".xlsx, .xls, .csv" class="btn btn-success" />
             <button id="btnAddItemByExcel" type="button" class="btn btn-success">Add by excel</button>
         </div>
@@ -209,7 +210,6 @@
         </div>
 
         <div class="table-responsive">
-            <form id="frm-item" action="">
                 <table id="data-table-item" class="table">
                     <thead>
                     <tr>
@@ -228,7 +228,6 @@
                     </tr>
                     </thead>
                 </table>
-            </form>
         </div>
     </div>
 </div>
@@ -244,6 +243,7 @@
 <script src="/mylib/js/call-ajax.js"></script>
 <script src="/mylib/js/show-img-modal.js"></script>
 <script src="/mylib/js/convert-object-to-form.js"></script>
+
 <script>
     var table;
     $(document).ready(function (){
@@ -291,6 +291,8 @@
                 }
             ],
             'order': [[0, 'asc']],
+            'filter': false,
+            'bSort': false,
             "drawCallback": function( settings ) { // active when draw done datatable
                 // show Qr image
                 $('.item-img-qr').click(function (e) {
@@ -347,6 +349,65 @@
                 }
             }
         });
+    });
+
+    //Thêm các nút sort và filter vào header của 6 cột đầu tiên
+    $('#data-table-item th:lt(6)').each(function(i) {
+        $(this).append(' <br><i class="fas fa-sort"></i>&ensp;<i class="fas fa-filter filter-icon"></i>');
+    });
+
+    var isFilterListOpen = false;
+    var $filterContainer = null;
+    var $filterList = null;
+    $('.filter-icon').click(function() {
+        const index = $('.filter-icon').index(this);
+        console.log(index);
+        if (!isFilterListOpen) {
+            isFilterListOpen = true;
+
+            //if($filterContainer === null){
+                var data = [
+                    { id: '1', text: 'A' },
+                    { id: '2', text: 'B' },
+                    { id: '3', text: 'C' },
+                ];
+
+                // Tạo danh sách checkbox
+                $filterList = $('<div>').addClass('filter-list');
+                $filterList.css({"position": "absolute", "min-width": "40","left": "40", "top": "-13", "background": "black"});
+                data.forEach(function(item) {
+                    var $label = $('<label>').text(item.text);
+                    var $checkbox = $('<input>').attr({
+                        type: 'checkbox',
+                        value: item.id
+                    });
+                    $label.prepend($checkbox);
+                    $filterList.append($label);
+                    $filterList.append('<br>');
+                });
+
+                // Hiển thị danh sách checkbox
+                $filterContainer = $('<div>').addClass('filter-container').append($filterList);
+                $filterContainer.css({"position": "relative"});
+                $(this).after($filterContainer);
+
+                // Xử lý sự kiện khi checkbox được chọn
+                $filterList.on('change', 'input[type="checkbox"]', function() {
+                    // Lọc dữ liệu theo các checkbox được chọn
+                    var checkedValues = $filterList.find('input:checked').map(function() {
+                        return $(this).val();
+                    }).get();
+                    console.log(checkedValues);
+                });
+            //}
+
+            $filterList.show();
+        } else {
+            isFilterListOpen = false;
+            // Ẩn danh sách checkbox
+            console.log(123);
+            $filterList.hide();
+        }
     });
 
     // open add modal
@@ -472,6 +533,8 @@
             }
         });
     });
+
+
 </script>
 </body>
 </html>

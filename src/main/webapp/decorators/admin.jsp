@@ -21,7 +21,12 @@
     <script src="http://code.jquery.com/jquery.min.js" type="text/javascript"></script>
     <%-- sweetalert2 --%>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
+    <%-- font-awesome --%>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <%-- select2 --%>
+    <link href="/vendors/bower_components/select2/dist/css/select2.min.css" rel="stylesheet" />
+    <%-- select2 --%>
+    <script src="/vendors/bower_components/select2/dist/js/select2.full.min.js"></script>
 </head>
 <body data-sa-theme="1">
     <main class="main">
@@ -43,7 +48,7 @@
 
     <!-- Javascript -->
     <!-- Vendors -->
-    <script src="/vendors/bower_components/jquery/dist/jquery.min.js"></script>
+<%--    <script src="/vendors/bower_components/jquery/dist/jquery.min.js"></script>--%>
     <script src="/vendors/bower_components/popper.js/dist/umd/popper.min.js"></script>
     <script src="/vendors/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="/vendors/bower_components/jquery.scrollbar/jquery.scrollbar.min.js"></script>

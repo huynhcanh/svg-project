@@ -6,6 +6,7 @@
 </head>
 <body>
 <link rel="stylesheet" href="/mylib/css/show-img-modal.css">
+
 <header class="content__title">
     <h1>DATA TABLES</h1>
 
@@ -94,7 +95,6 @@
             </div>
         </div>
         <div class="table-responsive">
-            <form id="frm-location" action="">
                 <table id="data-table-location" class="table">
                     <thead>
                     <tr>
@@ -110,7 +110,6 @@
                     </tr>
                     </thead>
                 </table>
-            </form>
         </div>
     </div>
 </div>
