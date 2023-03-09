@@ -13,9 +13,11 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Repository
@@ -23,7 +25,6 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
 
     @PersistenceContext
     private EntityManager entityManager;
-
 
     @Override
     public List<ClassificationResponse> findDistinctClassifications() {
@@ -91,14 +92,6 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
 
     @Override
     public List<ItemEntity> sortAndFilterItems(SortAndFilterItemRequest sortAndfilter) {
-        // Lấy các thông tin filter và sort của các thuộc tính trong SortAndFilterItemRequest
-        SortAndFilterItemRequest.SortAndFilter<String> classification = sortAndfilter.getClassification();
-        SortAndFilterItemRequest.SortAndFilter<Long> id = sortAndfilter.getId();
-        SortAndFilterItemRequest.SortAndFilter<String> name = sortAndfilter.getName();
-        SortAndFilterItemRequest.SortAndFilter<String> unit = sortAndfilter.getUnit();
-        SortAndFilterItemRequest.SortAndFilter<String> color = sortAndfilter.getColor();
-        SortAndFilterItemRequest.SortAndFilter<String> remark = sortAndfilter.getRemark();
-
         // Khởi tạo câu query
         StringBuilder query = new StringBuilder();
         query.append("SELECT i FROM ItemEntity i ");
@@ -109,89 +102,55 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         StringBuilder filterQuery = new StringBuilder();
         StringBuilder sortQuery = new StringBuilder();
 
-        // Xử lý phần filter và sort cho thuộc tính classification
-        if (classification != null) {
-            // Thêm phần join vào câu query
-            joinQuery.append("INNER JOIN i.classification c ");
-
-            // Xử lý phần filter cho thuộc tính classification
-            String[] filter = classification.getFilter();
-            if (filter != null) {
-                filterQuery.append("c.code IN (" + FormatUtils.arrayToString(filter) + ") AND ");
-            }
-
-            // Xử lý phần sort cho thuộc tính classification
-            String sort = classification.getSort();
-            if (sort != null) {
-                sortQuery.append("c.value " + sort + ",");
-            }
-        }
-
-        // Xử lý phần filter và sort cho thuộc tính id
-        if (id != null) {
-            // Xử lý phần filter cho thuộc tính id
-            Long[] filter = id.getFilter();
-            if (filter != null) {
-                filterQuery.append("i.id IN (" + FormatUtils.arrayToString(filter) + ") AND ");
-            }
-
-            // Xử lý phần sort cho thuộc tính id
-            String sort = id.getSort();
-            if (sort != null) {
-                sortQuery.append(" i.id " + sort + ",");
+        Map<String, String> sort = sortAndfilter.getSort();
+        if (sort != null) {
+            for (String key : sort.keySet()) {
+                String value = sort.get(key);
+                if (key.equals("classification")) {
+                    if(!joinQuery.toString().contains("INNER JOIN i.classification c")){
+                        joinQuery.append(" INNER JOIN i.classification c");
+                    }
+                    sortQuery.append("c.value ").append(value);
+                } else if (key.equals("unit")) {
+                    if(!joinQuery.toString().contains("INNER JOIN i.unit u")){
+                        joinQuery.append(" INNER JOIN i.unit u");
+                    }
+                    sortQuery.append("u.value ").append(value);
+                } else {
+                    sortQuery.append("i.").append(key).append(" ").append(value);
+                }
+                break;
             }
         }
 
-        // Xử lý phần filter và sort cho thuộc tính name
-        if (name != null) {
-            // Xử lý phần filter cho thuộc tính name
-            String[] filter = name.getFilter();
-            if (filter != null) {
-                filterQuery.append("i.name IN (" + FormatUtils.arrayToString(filter) + ") AND ");
-            }
-
-            // Xử lý phần sort cho thuộc tính name
-            String sort = name.getSort();
-            if (sort != null) {
-                sortQuery.append(" i.name " + sort + ",");
-            }
-        }
-
-        if(unit != null) {
-            joinQuery.append("INNER JOIN i.unit u ");
-            String[] filter = unit.getFilter();
-            if(filter != null){
-                filterQuery.append("u.code IN (" + FormatUtils.arrayToString(filter) + ") AND ");
-            }
-            String sort = unit.getSort();
-            if(sort != null){
-                sortQuery.append(" u.value " + sort + ",");
-            }
-        }
-
-        if(color != null) {
-            String[] filter = color.getFilter();
-            if(filter != null){
-                filterQuery.append("i.color IN (" + FormatUtils.arrayToString(filter) + ") AND ");
-            }
-            String sort = color.getSort();
-            if(sort != null){
-                sortQuery.append(" i.color " + sort + ",");
+        Map<String, List<String>> filter = sortAndfilter.getFilter();
+        if(filter != null){
+            for (String key : filter.keySet()) {
+                List<String> values = filter.get(key);
+                if (key.equals("classification")) {
+                    if(!joinQuery.toString().contains("INNER JOIN i.classification c")){
+                        joinQuery.append(" INNER JOIN i.classification c");
+                    }
+                    filterQuery.append("c.code IN (")
+                            .append(FormatUtils.arrayToString(values))
+                            .append(") AND ");
+                } else if (key.equals("unit")) {
+                    if(!joinQuery.toString().contains("INNER JOIN i.unit u")){
+                        joinQuery.append(" INNER JOIN i.unit u");
+                    }
+                    filterQuery.append("u.code IN (")
+                            .append(FormatUtils.arrayToString(values))
+                            .append(") AND ");
+                } else {
+                    filterQuery.append("i.").append(key).append(" IN (")
+                            .append(FormatUtils.arrayToString(values))
+                            .append(") AND ");
+                }
             }
         }
 
-        if(remark != null) {
-            String[] filter = remark.getFilter();
-            if(filter != null){
-                filterQuery.append("i.remark IN (" + FormatUtils.arrayToString(filter) + ") AND ");
-            }
-            String sort = remark.getSort();
-            if(sort != null){
-                sortQuery.append(" i.remark " + sort + ",");
-            }
-        }
-
-        if(!joinQuery.toString().isEmpty()){
+        // Thêm các phần query vào câu query chính
+        if (joinQuery.length() > 0) {
             query.append(joinQuery);
         }
 
@@ -203,8 +162,6 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         }
 
         if (sortQuery.toString().length() > 0) {
-            // Remove the trailing comma and add the ORDER BY clause
-            sortQuery.setLength(sortQuery.length() - 1);
             sortQuery.insert(0, " ORDER BY ");
             query.append(sortQuery);
         }

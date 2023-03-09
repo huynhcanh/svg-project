@@ -367,15 +367,10 @@
     }
 
     function mergeSortAndFilter(sorts, filters) {
-        let result = {};
-        Object.keys(sorts).forEach(key => {
-            result[key] = { sort: sorts[key], filter: filters[key] || null };
-        });
-        Object.keys(filters).forEach(key => {
-            if (!sorts.hasOwnProperty(key)) {
-                result[key] = { sort: null, filter: filters[key].length > 0 ? filters[key] : null };
-            }
-        });
+        let result = {
+            sort: sorts,
+            filter: filters
+        };
         return result;
     }
 
@@ -450,11 +445,20 @@
                         return $(this).val();
                     }).get();
                     filters[fomatKey(index)] = checkedValues;
+                    for (const key in filters) {
+                        if (Array.isArray(filters[key]) && filters[key].length === 0) {
+                            delete filters[key];
+                        }
+                    }
+                    var object = mergeSortAndFilter(sorts, filters);
                     var object = mergeSortAndFilter(sorts, filters);
                     callDB("/api/items/sort-filter", "POST", object, function(result){
                         if(result.status){
-                            table.ajax.reload();
-                            console.log(result.data);
+                            table.clear();
+                            // thêm các hàng mới vào DataTable từ danh sách item trả về của API POST
+                            table.rows.add(result.data);
+                            // vẽ lại DataTable
+                            table.draw();
                         }
                     });
                 });
@@ -471,13 +475,31 @@
 
     $('.sort-icon').click(function(){
         const index = $('.sort-icon').index(this);
-        // Cập nhật trạng thái sort của title hiện tại
-        sorts[fomatKey(index)] = sorts[fomatKey(index)] === 'asc' ? 'desc' : 'asc';
+        const newSort = {[fomatKey(index)]: "asc"};
+
+        const existingKeys = Object.keys(sorts);
+
+        if (existingKeys.indexOf(fomatKey(index).toString()) === -1) {
+            // Key mới không có trong danh sách key hiện tại
+            sorts = newSort;
+        } else {
+            // Key mới đã tồn tại
+            const currentValue = sorts[fomatKey(index)];
+            if (currentValue === "asc") {
+                sorts[fomatKey(index)] = "desc";
+            } else {
+                sorts[fomatKey(index)] = "asc";
+            }
+        }
+
         var object = mergeSortAndFilter(sorts, filters);
         callDB("/api/items/sort-filter", "POST", object, function(result){
             if(result.status){
-                table.ajax.reload();
-                console.log(result.data);
+                table.clear();
+                // thêm các hàng mới vào DataTable từ danh sách item trả về của API POST
+                table.rows.add(result.data);
+                // vẽ lại DataTable
+                table.draw();
             }
         });
     });

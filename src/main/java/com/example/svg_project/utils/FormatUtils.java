@@ -1,5 +1,7 @@
 package com.example.svg_project.utils;
 
+import java.util.List;
+
 public class FormatUtils {
     public static String formatValue(String value){
         value = value.trim();
@@ -23,13 +25,13 @@ public class FormatUtils {
         return s.toString();
     }
 
-    public static String arrayToString(Object[] arr){
+    public static String arrayToString(List<?> arr){
         StringBuilder sb = new StringBuilder();
         sb.append("'");
-        sb.append(arr[0]);
-        for (int i = 1; i < arr.length; i++) {
+        sb.append(arr.get(0));
+        for (int i = 1; i < arr.size(); i++) {
             sb.append("', '");
-            sb.append(arr[i]);
+            sb.append(arr.get(i));
         }
         sb.append("'");
         String result = sb.toString();

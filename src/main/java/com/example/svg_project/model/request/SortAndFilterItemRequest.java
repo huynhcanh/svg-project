@@ -8,23 +8,13 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Map;
 
 
 @Setter
 @Getter
 @NoArgsConstructor
 public class SortAndFilterItemRequest {
-    private SortAndFilter<String> classification;
-    private SortAndFilter<Long> id;
-    private SortAndFilter<String> name;
-    private SortAndFilter<String> unit;
-    private SortAndFilter<String> color;
-    private SortAndFilter<String> remark;
-
-    @Setter
-    @Getter
-    public static class SortAndFilter<T>{
-        private String sort;
-        private T filter[];
-    }
+    private Map<String, String> sort;
+    private Map<String, List<String>> filter;
 }
