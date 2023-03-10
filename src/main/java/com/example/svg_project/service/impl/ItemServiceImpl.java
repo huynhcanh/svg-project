@@ -176,15 +176,26 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemResponse> sortAndFilterItems(SortAndFilterItemRequest sortAndfilter) {
-        List<ItemEntity> itemEntities = null;
-//        if(sortAndfilter == null){
-//            System.out.println("khong sort va filter");
-//            itemEntities = itemRepository.findAll();
-//        }else{
-//            System.out.println(" sort va filter");
-//            itemEntities = itemRepository.sortAndFilterItems(sortAndfilter);
-//        }
-        itemEntities = itemRepository.sortAndFilterItems(sortAndfilter);
+        List<ItemEntity> itemEntities = itemRepository.sortAndFilterItems(sortAndfilter);
         return itemEntities.stream().map(item->itemMapper.toResponse(item)).collect(Collectors.toList());
+    }
+
+    @Override
+    public void dowloadFromExcelItems() {
+        String[] headers = {"Classification code", "Item name", "Unit code", "Color", "Remark"};
+        String sheetName = "Items";
+        String downloadDirPath = System.getProperty("user.home") + File.separator + "Downloads" + File.separator;
+        OutputStream outputStream = null;
+        try {
+            String fileName = GenerateUtils.generateFileName(downloadDirPath + "form-add-items.xlsx");
+            outputStream = new FileOutputStream(fileName);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
+            ExcelUtils.exportToExcel(new ArrayList<>(), headers, sheetName, outputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

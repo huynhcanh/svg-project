@@ -10,7 +10,7 @@ public class ManagementController {
 
     @RequestMapping(value = "/managements", method = RequestMethod.GET)
     public ModelAndView managementsPage() {
-        ModelAndView mav = new ModelAndView("managements");
+        ModelAndView mav = new ModelAndView("moves");
         return mav;
     }
 }

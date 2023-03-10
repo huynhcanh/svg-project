@@ -1,16 +1,20 @@
 package com.example.svg_project.service.impl;
 
+import com.example.svg_project.constant.HistoryConstant;
 import com.example.svg_project.entity.*;
 import com.example.svg_project.exception.NotFoundException;
 import com.example.svg_project.exception.QuantityNotEnoughtException;
 import com.example.svg_project.model.mapper.ItemLocationMapper;
 import com.example.svg_project.model.request.AddItemLocationRequest;
+import com.example.svg_project.model.request.HistoryRequest;
 import com.example.svg_project.model.request.MoveItemRequest;
+import com.example.svg_project.model.response.HistoryResponse;
 import com.example.svg_project.model.response.ItemLocationResponse;
 import com.example.svg_project.repository.*;
 import com.example.svg_project.service.ItemLocationService;
 import com.example.svg_project.utils.EntityUtils;
 import com.example.svg_project.utils.ExceptionUtils;
+import com.example.svg_project.utils.FormatUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.example.svg_project.constant.HistoryConstant.*;
 
 @Service
 public class ItemLocationServiceImpl implements ItemLocationService {
@@ -43,6 +49,9 @@ public class ItemLocationServiceImpl implements ItemLocationService {
 
     @Autowired
     private ItemLocationRepository itemLocationRepository;
+
+    @Autowired
+    private HistoryRepository historyRepository;
 
     @Override
     @Transactional
@@ -77,12 +86,34 @@ public class ItemLocationServiceImpl implements ItemLocationService {
                 .location(locationEntity)
                 .quantity(addItemLocationRequest.getQuantity())
                 .build();
+        // history
+        String event = "";
+        String toHistory = "";
+        int quantityHistory = addItemLocationRequest.getQuantity();
+        if(warehouse.equals(OUT) && rack.equals(OUT) && tray.equals(OUT)) {
+            toHistory = event = OUT;
+        } else {
+            toHistory = FormatUtils.putWordsByChar('-',
+                    locationEntity.getWarehouse(),
+                    locationEntity.getRack(),
+                    locationEntity.getTray());
+            event = IN;
+        }
+        HistoryEntity historyEntity= HistoryEntity.builder()
+                .event(event)
+                .fromLocation("")
+                .toLocation(toHistory)
+                .item(itemEntity)
+                .quantity(quantityHistory)
+                .build();
+        historyRepository.save(historyEntity);
+
         return itemLocationMapper.toResponse(itemLocationRepository.save(itemLocationEntity));
     }
 
     @Override
     public List<ItemLocationResponse> findAll() {
-        List<ItemLocationEntity> itemLocationEntities = itemLocationRepository.findAll();
+        List<ItemLocationEntity> itemLocationEntities = itemLocationRepository.findAllByLocationWarehouseNotEqual(OUT);
         return itemLocationEntities.stream().map(item->itemLocationMapper.toResponse(item)).collect(Collectors.toList());
     }
 
@@ -106,6 +137,13 @@ public class ItemLocationServiceImpl implements ItemLocationService {
     @Transactional
     public List<ItemLocationResponse> moveItemLocations(MoveItemRequest moveItemRequest) {
 
+        // find location move
+        String warehouse = moveItemRequest.getWarehouse();
+        String rack = moveItemRequest.getRack();
+        String tray = moveItemRequest.getTray();
+        LocationEntity locationMove = locationRepository.findByWarehouseAndRackAndTray(
+                warehouse, rack, tray);
+
         List<ItemLocationEntity> itemLocationEntities = new ArrayList<>();
 
         for(MoveItemRequest.MoveDetailRequest itemLocationReq: moveItemRequest.getItems()){
@@ -115,20 +153,6 @@ public class ItemLocationServiceImpl implements ItemLocationService {
             int quantityMove = itemLocationReq.getQuantity();
             int quantityCurrent = itemLocationEntity.getQuantity();
             ItemEntity itemMove = itemLocationEntity.getItem();
-            // find location move
-            String warehouse = moveItemRequest.getWarehouse();
-            String rack = moveItemRequest.getRack();
-            String tray = moveItemRequest.getTray();
-            LocationEntity locationMove = locationRepository.findByWarehouseAndRackAndTray(
-                    warehouse, rack, tray);
-            if(locationMove == null){
-                locationMove = LocationEntity.builder()
-                        .warehouse(warehouse)
-                        .rack(rack)
-                        .tray(tray)
-                        .build();
-                locationMove = locationRepository.save(locationMove);
-            }
 
             // check qty is allow?
             if(!isQuatityAllow(quantityCurrent, quantityMove))
@@ -136,24 +160,63 @@ public class ItemLocationServiceImpl implements ItemLocationService {
 
             // only move items have location != current location
             if(itemLocationEntity.getLocation().getId() != locationMove.getId()){
-                // save item location current
+                // from location & to location & event
+                String fromLocation = FormatUtils.putWordsByChar('-',
+                        itemLocationEntity.getLocation().getWarehouse(),
+                        itemLocationEntity.getLocation().getRack(),
+                        itemLocationEntity.getLocation().getTray());
+                String toLocation = null;
+                String event = null;
+
+                // save item location current and get fromLocation
                 itemLocationEntity.setQuantity(quantityCurrent - quantityMove);
                 itemLocationRepository.save(itemLocationEntity);
 
-                boolean existsByItemAndLocation = itemLocationRepository.existsByItemAndLocation(itemMove, locationMove);
-                if(existsByItemAndLocation){
-                    ItemLocationEntity updateItemLocation = itemLocationRepository.findByItemAndLocation(itemMove, locationMove);
-                    updateItemLocation.setQuantity(updateItemLocation.getQuantity() + quantityMove);
-                    itemLocationEntities.add(itemLocationRepository.save(updateItemLocation));
-                }else{
-                    // reate new item locaiton with new location
-                    ItemLocationEntity newItemLocation = ItemLocationEntity.builder()
+                // if move to OUT
+                if(warehouse.equals(OUT) && rack.equals(OUT) && tray.equals(OUT)){
+                    ItemLocationEntity outItemLocation = ItemLocationEntity.builder()
                             .item(itemMove)
                             .location(locationMove)
                             .quantity(quantityMove)
                             .build();
-                    itemLocationEntities.add(itemLocationRepository.save(newItemLocation));
+                    itemLocationEntities.add(itemLocationRepository.save(outItemLocation));
+                    toLocation = event = OUT;
                 }
+                else {
+                    // move to position that item and location (#OUT) existed
+                    ItemLocationEntity updateItemLocation = itemLocationRepository.findByItemAndLocation(itemMove, locationMove);
+                    if(updateItemLocation != null){
+                        updateItemLocation.setQuantity(updateItemLocation.getQuantity() + quantityMove);
+                        itemLocationEntities.add(itemLocationRepository.save(updateItemLocation));
+                        toLocation = FormatUtils.putWordsByChar('-',
+                                updateItemLocation.getLocation().getWarehouse(),
+                                updateItemLocation.getLocation().getRack(),
+                                updateItemLocation.getLocation().getTray());
+                    }
+                    else{
+                        // create new itemlocaiton with new location
+                        ItemLocationEntity newItemLocation = ItemLocationEntity.builder()
+                                .item(itemMove)
+                                .location(locationMove)
+                                .quantity(quantityMove)
+                                .build();
+                        itemLocationEntities.add(itemLocationRepository.save(newItemLocation));
+                        toLocation = FormatUtils.putWordsByChar('-',
+                                newItemLocation.getLocation().getWarehouse(),
+                                newItemLocation.getLocation().getRack(),
+                                newItemLocation.getLocation().getTray());
+                    }
+                    event = TRANSFERT;
+                }
+                // save history
+                HistoryEntity historyEntity= HistoryEntity.builder()
+                        .event(event)
+                        .fromLocation(fromLocation)
+                        .toLocation(toLocation)
+                        .item(itemMove)
+                        .quantity(quantityMove)
+                        .build();
+                historyRepository.save(historyEntity);
             }
         }
         return itemLocationEntities.stream().map(item->itemLocationMapper.toResponse(item)).collect(Collectors.toList());

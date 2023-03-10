@@ -32,7 +32,10 @@
                 data-toggle="modal" data-target="#modal-add">Add by web</button>
         <br> <br>
         <div>
-            <label>Add by excel</label> <br>
+            <div style="margin-bottom: 17px;">
+                <label>Add by excel</label>
+                <button id="dowloadFormExcel" type="button" class="btn btn-warning">Download form</button>
+            </div>
             <input id="inputAddItemByExcel" type="file" accept=".xlsx, .xls, .csv" class="btn btn-success" />
             <button id="btnAddItemByExcel" type="button" class="btn btn-success">Add by excel</button>
         </div>
@@ -221,8 +224,8 @@
                         <th>Remark</th>
                         <th>QR code</th>
                         <th><input type="checkbox" name="select_all" value="1" id="example-select-all"></th>
-                        <th style="width: 200px !important;">
-                            <button id="exportExcel" style="margin-left: 20px"type="button" class="btn btn-success">Excel</button>
+                        <th>
+                            <button id="exportExcel" type="button" class="btn btn-success">Excel</button>
                             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-delete">Delete</button>
                         </th>
                     </tr>
@@ -284,7 +287,7 @@
                 },
                 {
                     data: 'id',
-                    width: 200,
+                    width: '200px',
                     'render': function (data, type, full, meta){
                         return '<button value="'+data+'" type="button" class="btnEditItem btn btn-info"' +
                             'data-toggle="modal" data-target="#modal-edit">Edit</button>';
@@ -354,7 +357,7 @@
 
     //Thêm các nút sort và filter vào header của 6 cột đầu tiên
     $('#data-table-item th:lt(6)').each(function(i) {
-        $(this).append(' <br><i class="fas fa-sort sort-icon"></i>&ensp;<i class="fas fa-filter filter-icon"></i>');
+        $(this).append(' <br><i class="zmdi zmdi-swap-vertical zmdi-hc-fw sort-icon"></i>&ensp;<i class="zmdi zmdi-tune zmdi-hc-fw filter-icon"></i>');
     });
 
     function fomatKey(index) {
@@ -522,7 +525,11 @@
     $('#warehouseSelectAddItem').change(function() {
         var warehouse = $(this).val();
         if(warehouse){
-            loadSelect('#rackSelectAddItem','/api/locations/racks/warehouse?warehouse='+ warehouse , 'Rack');
+            if(warehouse !== 'OUT') loadSelect('#rackSelectAddItem',
+                '/api/locations/racks/warehouse?warehouse='+ warehouse , 'Rack');
+            else {
+                $('#rackSelectAddItem').empty();
+            }
         }
         else {
             $('#rackSelectAddItem').empty();
@@ -540,8 +547,17 @@
         else $('#traySelectAddItem').empty();
     });
 
-    handleClick("#formSubmitAddItem", "#btnAddItemSave", "/api/item-location", "post",
-        function (result) {
+    $('#btnAddItemSave').click(function (e) {
+        e.preventDefault();
+        var data = {};
+        var formData = $("#formSubmitAddItem").serializeArray();
+        $.each(formData, function (i, v) {
+            data[""+v.name+""] = v.value;
+        });
+        if($('#warehouseSelectAddItem').val() === 'OUT'){
+            data['rack'] = data['tray'] = 'OUT';
+        }
+        callDB("/api/item-location", "post", data, function (result) {
             if(result.status){
                 table.ajax.reload();
                 swal("Add Item!", "You have successfully added a item!", "success");
@@ -549,6 +565,7 @@
                 swal(result.data);
             }
         });
+    });
 
     // delete
     $('#btnDeleteItemSave').click(function (e) {
@@ -585,6 +602,13 @@
                 swal(result.data);
             }
         });
+
+    // dowload form excel
+    $('#dowloadFormExcel').click(function (e) {
+        // Handle form submission event
+        e.preventDefault();
+        callDB('/api/items/dowload-form-excel', 'get', null);
+    });
 
     // export excel
     $('#exportExcel').click(function (e) {

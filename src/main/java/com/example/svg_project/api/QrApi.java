@@ -2,6 +2,8 @@ package com.example.svg_project.api;
 
 import com.example.svg_project.utils.GenerateUtils;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.BufferedImageHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,8 +25,11 @@ public class QrApi {
         return new BufferedImageHttpMessageConverter();
     }
 
-    @GetMapping(value = "/generate-qr")
-    public BufferedImage generateQr(@RequestParam("id") String id) {
-        return GenerateUtils.generateQrCode(id, QR_CODE_SIZE_WIDTH_WEB, QR_CODE_SIZE_HEIGHT_WEB);
+    @GetMapping(value = "/generate-qr", produces = "image/png")
+    public ResponseEntity<BufferedImage> generateQr(@RequestParam("id") String id) {
+        BufferedImage qrCode = GenerateUtils.generateQrCode(id, QR_CODE_SIZE_WIDTH_WEB, QR_CODE_SIZE_HEIGHT_WEB);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, "image/png")
+                .body(qrCode);
     }
 }

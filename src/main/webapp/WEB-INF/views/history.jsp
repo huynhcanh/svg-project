@@ -27,64 +27,93 @@
     <div class="card-body">
         <h4 class="card-title">Move item history</h4>
         <div class="text-right">
-            <input type="date" id="fromHistory" name="fromHistory">
-            <input type="date" id="toHistory" name="toHistory">
-            <button id="exportExcel" type="button" class="btn btn-warning">Download excel</button>
+            <form id="frm-history">
+                <input type="date" id="fromHistory" name="fromHistory">
+                <input type="date" id="toHistory" name="toHistory">
+                <button id="exportExcel" type="button" class="btn btn-warning">Download excel</button>
+            </form>
         </div>
         <div class="table-responsive">
-            <table id="data-table-item" class="table">
+            <table id="data-table-history" class="table">
                 <thead>
                 <tr>
-                    <th>Classification</th>
+                    <th>Time</th>
+                    <th>Logged User</th>
+                    <th>Event</th>
                     <th>Item ID</th>
                     <th>Item name</th>
-                    <th>Unit</th>
-                    <th>Color</th>
-                    <th>Remark</th>
+                    <th>Qty</th>
+                    <th>From <i class="fas fa-caret-right"></i> To</th>
+                    <th>Note</th>
                 </tr>
                 </thead>
             </table>
         </div>
     </div>
 </div>
+<script src="/mylib/js/call-ajax.js"></script>
 
 <script>
     var table;
     $(document).ready(function () {
-        table = $('#data-table-item').DataTable({
+        table = $('#data-table-history').DataTable({
             'ajax': {
-                'url': '/api/items',
+                'url': '/api/histories',
                 'method': 'GET',
                 'dataSrc': ''
             },
             'columns': [
+                {data: 'createdDate'},
+                {data: 'createdBy'},
+                {data: 'event'},
                 {
-                    data: 'classification',
+                    data: 'item',
                     'render': function (data, type, full, meta) {
-                        return (data) ? data.value : null;
+                        return (data) ? data.id : null;
                     }
                 },
-                {data: 'id'},
-                {data: 'name'},
                 {
-                    data: 'unit',
+                    data: 'item',
                     'render': function (data, type, full, meta) {
-                        return (data) ? data.value : null;
+                        return (data) ? data.name : null;
                     }
                 },
-                {data: 'color'},
-                {data: 'remark'}
+                {data: 'quantity'},
+                {
+                    data: null,
+                    'render': function (data, type, full, meta) {
+                        return data.fromLocation + ' <i class="fas fa-caret-right"></i> ' + data.toLocation;
+                    }
+                },
+                {data: 'note'}
             ],
-            'order': [[0, 'asc']]
+            'order': [[0, 'asc']],
+            'filter': false,
+            'bSort': false
         });
     });
 
     $('#exportExcel').click(function (e) {
+        e.preventDefault();
         var fromVal = $('#fromHistory').val();
         var toVal = $('#toHistory').val();
         if(fromVal && toVal){
             if(new Date(fromVal) <= new Date(toVal)){
-                console.log(123);
+                var data = {};
+                var formData = $('#frm-history').serializeArray();
+                $.each(formData, function (i, v) {
+                    data[""+v.name+""] = v.value;
+                });
+                console.log(data);
+                callDB('/api/item-location-history', 'post', data, function (result) {
+                    if(result.status){
+                        console.log('thanh cong');
+                    }else{
+                        console.log('that bai');
+                    }
+                });
+            }else{
+                console.log('sai yeu cau');
             }
         }
     });

@@ -235,7 +235,11 @@
     $('#warehouseSelectMoveItem').change(function() {
         var warehouse = $(this).val();
         if(warehouse){
-            loadSelect('#rackSelectMoveItem','/api/locations/racks/warehouse?warehouse='+ warehouse , 'Rack');
+            if(warehouse !== 'OUT') loadSelect('#rackSelectMoveItem',
+                '/api/locations/racks/warehouse?warehouse='+ warehouse , 'Rack');
+            else {
+                $('#rackSelectMoveItem').empty();
+            }
         }
         else {
             $('#rackSelectMoveItem').empty();
@@ -271,6 +275,9 @@
             } else {
                 data[formData[i].name] = formData[i].value;
             }
+        }
+        if($('#warehouseSelectMoveItem').val() === 'OUT'){
+            data['rack'] = data['tray'] = 'OUT';
         }
         callDB("/api/item-location-move", "put", data,
             function (result) {

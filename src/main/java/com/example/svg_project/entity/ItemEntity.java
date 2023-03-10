@@ -32,4 +32,7 @@ public class ItemEntity extends BaseEntity{
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     private List<ItemLocationEntity> itemLocations;
+
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+    private List<HistoryEntity> histories;
 }

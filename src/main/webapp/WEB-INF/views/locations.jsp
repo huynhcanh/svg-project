@@ -145,9 +145,12 @@
                   }
                 },
                 {
-                    data: 'id',
+                    data: null,
                     'render': function (data, type, full, meta){
-                        return '<input type="checkbox" name="ids" value="'+data+'">';
+                        if(!(data.warehouse === 'OUT' && data.rack === 'OUT' && data.rack === 'OUT')){
+                            return '<input type="checkbox" name="ids" value="'+data.id+'">';
+                        }
+                        return '';
                     }
                 }
             ],

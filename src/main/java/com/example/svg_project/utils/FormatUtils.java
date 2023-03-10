@@ -37,4 +37,8 @@ public class FormatUtils {
         String result = sb.toString();
         return result;
     }
+
+    public static String putWordsByChar(char x, String ...words){
+        return String.join(Character.toString(x), words);
+    }
 }

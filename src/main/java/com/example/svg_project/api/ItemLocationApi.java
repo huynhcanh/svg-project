@@ -1,7 +1,9 @@
 package com.example.svg_project.api;
 
 import com.example.svg_project.model.request.AddItemLocationRequest;
+import com.example.svg_project.model.request.HistoryRequest;
 import com.example.svg_project.model.request.MoveItemRequest;
+import com.example.svg_project.model.response.HistoryResponse;
 import com.example.svg_project.model.response.ItemLocationResponse;
 import com.example.svg_project.model.response.ItemResponse;
 import com.example.svg_project.service.ItemLocationService;
@@ -37,7 +39,4 @@ public class ItemLocationApi {
     public List<ItemLocationResponse> moveItemLocations(@Valid @RequestBody MoveItemRequest moveItemRequest) {
         return itemLocationService.moveItemLocations(moveItemRequest);
     }
-
-    //@PutMapping("/item-location-history")
-
 }

@@ -1,5 +1,6 @@
 package com.example.svg_project.service.impl;
 
+import com.example.svg_project.constant.HistoryConstant;
 import com.example.svg_project.entity.ItemEntity;
 import com.example.svg_project.entity.LocationEntity;
 import com.example.svg_project.exception.NotFoundException;
@@ -23,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.*;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.example.svg_project.constant.HistoryConstant.OUT;
 
 @Service
 public class LocationServiceImpl implements LocationService {

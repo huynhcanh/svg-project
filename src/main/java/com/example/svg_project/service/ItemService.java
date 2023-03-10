@@ -24,4 +24,5 @@ public interface ItemService {
     List<String> findDistinctColors();
     List<String> findDistinctRemarks();
     List<ItemResponse> sortAndFilterItems(SortAndFilterItemRequest sortAndfilter);
+    void dowloadFromExcelItems();
 }

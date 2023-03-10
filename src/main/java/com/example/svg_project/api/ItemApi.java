@@ -88,4 +88,8 @@ public class ItemApi {
         return itemService.sortAndFilterItems(sortAndfilter);
     }
 
+    @GetMapping("/items/dowload-form-excel")
+    public void dowloadFromExcelItems() {
+        itemService.dowloadFromExcelItems();
+    }
 }
