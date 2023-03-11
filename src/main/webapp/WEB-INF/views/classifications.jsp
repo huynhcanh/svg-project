@@ -128,7 +128,20 @@
                     }
                 }
             ],
-            'order': [[0, 'asc']]
+            // order: [[0, 'asc']],
+            // pageLength: 100,
+            // lengthChange: false,
+            dom: 'Bfrtip',
+            // orderCellsTop: true,
+            // destroy: true,
+            // retrieve: true,
+            // processing: true,
+            // serverSide: true,
+            filter: false,
+            bSort: false,
+            // //info: false,
+            // autoWidth: false,
+            // //bPaginate: false,
         });
 
         // Handle click on "Select all" control

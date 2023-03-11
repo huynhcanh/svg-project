@@ -16,13 +16,8 @@ public class HistoryApi {
     @Autowired
     HistoryService historyService;
 
-    @GetMapping("/histories")
-    public List<HistoryResponse> findAll(){
-        return historyService.findAll();
-    }
-
     @PostMapping("/histories/filter")
-    public List<HistoryResponse> history(@Valid @RequestBody HistoryRequest historyRequest) {
+    public List<HistoryResponse> history(@RequestBody HistoryRequest historyRequest) {
         return historyService.history(historyRequest);
     }
 }

@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,14 +39,8 @@ public class HistoryServiceImpl implements HistoryService {
     HistoryMapper historyMapper;
 
     @Override
-    public List<HistoryResponse> findAll() {
-        List<HistoryEntity> historyEntities = historyRepository.findAllByCreatedDateDESC();
-        return historyEntities.stream().map(item->historyMapper.toResponse(item)).collect(Collectors.toList());
-    }
-
-    @Override
     public List<HistoryResponse> history(HistoryRequest historyRequest) {
-        System.out.println(historyRequest.getFromHistory() + "-" + historyRequest.getToHistory());
-        return null;
+        List<HistoryEntity> historyEntities = historyRepository.filterHistory(historyRequest);
+        return historyEntities.stream().map(item->historyMapper.toResponse(item)).collect(Collectors.toList());
     }
 }

@@ -162,7 +162,9 @@
                     }
                 }
             ],
-            'order': [[0, 'asc']],
+            dom: 'Bfrtip',
+            filter: false,
+            bSort: false,
             "drawCallback": function( settings ) { // active when draw done datatable
 
             }

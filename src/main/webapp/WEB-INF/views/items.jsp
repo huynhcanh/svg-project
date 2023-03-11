@@ -294,9 +294,9 @@
                     }
                 }
             ],
-            'order': [[0, 'asc']],
-            'filter': false,
-            'bSort': false,
+            dom: 'Bfrtip',
+            filter: false,
+            bSort: false,
             "drawCallback": function( settings ) { // active when draw done datatable
                 // show Qr image
                 $('.item-img-qr').click(function (e) {

@@ -27,11 +27,9 @@
     <div class="card-body">
         <h4 class="card-title">Move item history</h4>
         <div class="text-right">
-            <form id="frm-history">
-                <input type="date" id="fromHistory" name="fromHistory">
-                <input type="date" id="toHistory" name="toHistory">
-                <button id="exportExcel" type="button" class="btn btn-warning">Download excel</button>
-            </form>
+            <input type="date" id="fromHistory" name="fromHistory">
+            <input type="date" id="toHistory" name="toHistory">
+            <button id="exportExcel" type="button" class="btn btn-warning">Download excel</button>
         </div>
         <div class="table-responsive">
             <table id="data-table-history" class="table">
@@ -57,64 +55,94 @@
     var table;
     $(document).ready(function () {
         table = $('#data-table-history').DataTable({
-            'ajax': {
-                'url': '/api/histories',
-                'method': 'GET',
-                'dataSrc': ''
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: '/api/histories/filter',
+                contentType: 'application/json',
+                type: 'POST',
+                data: function ( d ) {
+                    d.fromHistory = $('#fromHistory').val();
+                    d.toHistory = $('#toHistory').val();
+                    return JSON.stringify( d );
+                },
+                dataSrc: function (json) {
+                    // Xử lý kết quả tìm kiếm từ API trước khi trả về cho DataTable
+                    return json;
+                }
             },
-            'columns': [
+            columns: [
                 {data: 'createdDate'},
                 {data: 'createdBy'},
                 {data: 'event'},
                 {
                     data: 'item',
-                    'render': function (data, type, full, meta) {
+                    render: function (data, type, full, meta) {
                         return (data) ? data.id : null;
                     }
                 },
                 {
                     data: 'item',
-                    'render': function (data, type, full, meta) {
+                    render: function (data, type, full, meta) {
                         return (data) ? data.name : null;
                     }
                 },
                 {data: 'quantity'},
                 {
                     data: null,
-                    'render': function (data, type, full, meta) {
+                    render: function (data, type, full, meta) {
                         return data.fromLocation + ' <i class="fas fa-caret-right"></i> ' + data.toLocation;
                     }
                 },
                 {data: 'note'}
             ],
-            'order': [[0, 'asc']],
-            'filter': false,
-            'bSort': false
+            dom: 'Bfrtip',
+            filter: false,
+            bSort: false,
+        });
+    });
+
+    $("#fromHistory").change(function() {
+        var fromHistory = $(this).val();
+        var toHistory = $('#toHistory').val();
+        callDB('/api/histories/filter', 'post', {fromHistory, toHistory}, function (result) {
+            if(result.status){
+                table.clear();
+                table.rows.add(result.data);
+                table.draw();
+            }else{
+                console.log('that bai');
+            }
+        });
+    });
+
+    $("#toHistory").change(function() {
+        var fromHistory = $('#fromHistory').val();
+        var toHistory = $(this).val();
+        callDB('/api/histories/filter', 'post', {fromHistory, toHistory}, function (result) {
+            if(result.status){
+                table.clear();
+                table.rows.add(result.data);
+                table.draw();
+            }else{
+                console.log('that bai');
+            }
         });
     });
 
     $('#exportExcel').click(function (e) {
         e.preventDefault();
-        var fromVal = $('#fromHistory').val();
-        var toVal = $('#toHistory').val();
+
+        var fromHistory = $('#fromHistory').val();
+        var toHistory = $('#toHistory').val();
         if(fromVal && toVal){
-            if(new Date(fromVal) <= new Date(toVal)){
-                var data = {};
-                var formData = $('#frm-history').serializeArray();
-                $.each(formData, function (i, v) {
-                    data[""+v.name+""] = v.value;
-                });
-                console.log(data);
-                callDB('/api/item-location-history', 'post', data, function (result) {
-                    if(result.status){
-                        console.log('thanh cong');
-                    }else{
-                        console.log('that bai');
-                    }
-                });
-            }else{
-                console.log('sai yeu cau');
-            }
+            callDB('/api/histories/export-excel', 'post', {fromHistory, toHistory}, function (result) {
+                if(result.status){
+                    console.log('thanh cong');
+                }else{
+                    console.log('that bai');
+                }
+            });
         }
     });
 </script>

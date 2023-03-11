@@ -6,6 +6,5 @@ import com.example.svg_project.model.response.HistoryResponse;
 import java.util.List;
 
 public interface HistoryService {
-    List<HistoryResponse> findAll();
     List<HistoryResponse> history(HistoryRequest historyRequest);
 }

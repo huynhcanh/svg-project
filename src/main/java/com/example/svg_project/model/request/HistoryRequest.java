@@ -15,8 +15,6 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class HistoryRequest {
-    @NotNull(message = "fromHistory is not null or empty")
-    private Date fromHistory;
-    @NotNull(message = "toHistory is not null or empty")
-    private Date toHistory;
+    private String fromHistory;
+    private String toHistory;
 }
