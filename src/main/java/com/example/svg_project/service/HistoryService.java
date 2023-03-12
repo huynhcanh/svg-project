@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface HistoryService {
     List<HistoryResponse> history(HistoryRequest historyRequest);
+    void exportHistories(HistoryRequest historyRequest);
 }

@@ -1,18 +1,21 @@
 package com.example.svg_project.utils;
 
-import org.apache.poi.EncryptedDocumentException;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Function;
 
 public class ExcelUtils {
 
@@ -31,6 +34,9 @@ public class ExcelUtils {
         for (int i = 0; i < headers.length; i++) {
             XSSFCell cell = headerRow.createCell(i);
             cell.setCellValue(headers[i]);
+
+            // Thêm chỉnh sửa để tự động giãn chiều rộng của cột
+            sheet.autoSizeColumn(i);
         }
 
         // Tạo các row mới cho các entity được truyền vào và tạo các cell với các giá trị tương ứng
@@ -80,6 +86,9 @@ public class ExcelUtils {
                         picture.resize();
                     } else {
                         cell.setCellValue(value.toString());
+
+                        // Thêm chỉnh sửa để tự động giãn chiều rộng của cột
+                        sheet.autoSizeColumn(j);
                     }
                 }
             }

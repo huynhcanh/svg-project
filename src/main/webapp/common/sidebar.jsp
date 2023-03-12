@@ -19,7 +19,7 @@
         </div>
 
         <ul class="navigation">
-            <li class="@@indexactive"><a href="/home"><i class="zmdi zmdi-home"></i> Home</a></li>
+<%--            <li class="@@indexactive"><a href="/home"><i class="zmdi zmdi-home"></i> Home</a></li>--%>
 
             <li class="@@typeactive"><a href="/classifications"><i class="zmdi zmdi-format-underlined"></i> Classification</a></li>
 

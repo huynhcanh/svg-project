@@ -135,15 +135,13 @@
 
         var fromHistory = $('#fromHistory').val();
         var toHistory = $('#toHistory').val();
-        if(fromVal && toVal){
-            callDB('/api/histories/export-excel', 'post', {fromHistory, toHistory}, function (result) {
-                if(result.status){
-                    console.log('thanh cong');
-                }else{
-                    console.log('that bai');
-                }
-            });
-        }
+        callDB('/api/histories/export-excel', 'post', {fromHistory, toHistory}, function (result) {
+            if(result.status){
+                console.log('thanh cong');
+            }else{
+                console.log('that bai');
+            }
+        });
     });
 </script>
 </body>

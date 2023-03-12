@@ -20,4 +20,9 @@ public class HistoryApi {
     public List<HistoryResponse> history(@RequestBody HistoryRequest historyRequest) {
         return historyService.history(historyRequest);
     }
+
+    @PostMapping("/histories/export-excel")
+    public void exportHistories(@RequestBody HistoryRequest historyRequest) {
+        historyService.exportHistories(historyRequest);
+    }
 }

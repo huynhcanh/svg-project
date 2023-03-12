@@ -2,6 +2,7 @@ package com.example.svg_project.model.mapper;
 
 import com.example.svg_project.entity.HistoryEntity;
 import com.example.svg_project.entity.LocationEntity;
+import com.example.svg_project.model.excel.HistoryExcel;
 import com.example.svg_project.model.excel.LocationExcel;
 import com.example.svg_project.model.request.AddLocationRequest;
 import com.example.svg_project.model.response.HistoryResponse;
@@ -24,5 +25,12 @@ public class HistoryMapper {
         HistoryResponse historyResponse = modelMapper.map(entity, HistoryResponse.class);
         historyResponse.setCreatedDate(DateUtils.formatDate(entity.getCreatedDate()));
         return historyResponse;
+    }
+
+    public HistoryExcel toExcel(HistoryEntity entity) {
+        HistoryExcel historyExcel = modelMapper.map(entity, HistoryExcel.class);
+        historyExcel.setFromToLocation(entity.getToLocation() + " --> " + entity.getToLocation());
+        historyExcel.setCreatedDate(DateUtils.formatDate(entity.getCreatedDate()));
+        return historyExcel;
     }
 }
