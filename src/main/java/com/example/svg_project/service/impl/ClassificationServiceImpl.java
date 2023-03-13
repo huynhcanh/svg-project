@@ -88,8 +88,7 @@ public class ClassificationServiceImpl implements ClassificationService {
     @Override
     @Transactional
     public Long deleteClassification(Long id) {
-        Optional<ClassificationEntity> optionalClassificationEntity
-                = classificationRepository.findById(id);
+        Optional<ClassificationEntity> optionalClassificationEntity = classificationRepository.findById(id);
         if(!optionalClassificationEntity.isPresent()){
             throw new NotFoundException(ExceptionUtils.notFoundMessage("id = " + id));
         }
