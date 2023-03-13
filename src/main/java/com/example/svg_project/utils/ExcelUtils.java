@@ -96,6 +96,13 @@ public class ExcelUtils {
 
         // Ghi dữ liệu vào outputStream
         workbook.write(outputStream);
+
+        // Đóng workbook
+        workbook.close();
+
+        // Ghi dữ liệu xuống outputStream
+        outputStream.flush();
+        outputStream.close();
     }
 
     public static <T> List<T> mapExcelDataToList(InputStream is, Class<T> clazz) throws IOException {

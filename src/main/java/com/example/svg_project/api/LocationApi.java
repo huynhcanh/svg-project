@@ -17,8 +17,9 @@ public class LocationApi {
     LocationService locationService;
 
     @GetMapping("/locations")
-    public List<LocationResponse> findAll() {
-        return locationService.findAll();
+    public List<LocationResponse> findAll(@RequestParam(required = false) Boolean isOUT) {
+        System.out.println("123" + isOUT);
+        return locationService.findAll(isOUT);
     }
 
     @PostMapping("/locations")
@@ -32,8 +33,8 @@ public class LocationApi {
     }
 
     @GetMapping("/locations/warehouses")
-    List<String> findAllWarehouse(){
-        return locationService.findAllWarehouse();
+    List<String> findAllWarehouse(@RequestParam(required = false) Boolean isOUT){
+        return locationService.findAllWarehouse(isOUT);
     }
 
     @GetMapping("/locations/racks/warehouse")

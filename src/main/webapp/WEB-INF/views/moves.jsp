@@ -231,7 +231,7 @@
         $('#formSubmitMoveItem').trigger('reset');
 
         // load list warehouse
-        loadSelect('#warehouseSelectMoveItem','/api/locations/warehouses', 'Warehouse');
+        loadSelect('#warehouseSelectMoveItem','/api/locations/warehouses?isOUT=true', 'Warehouse');
     });
 
     $('#warehouseSelectMoveItem').change(function() {

@@ -40,8 +40,14 @@ public class LocationServiceImpl implements LocationService {
     ItemLocationRepository itemLocationRepository;
 
     @Override
-    public List<LocationResponse> findAll() {
-        List<LocationEntity> locationEntities = locationRepository.findAll();
+    public List<LocationResponse> findAll(Boolean isOUT) {
+        List<LocationEntity> locationEntities = null;
+        if(isOUT == null || isOUT == false){
+            locationEntities = locationRepository.findAllLocationByWarehouseNotLike(OUT);
+        }else{
+            locationEntities = locationRepository.findAll();
+        }
+
         return locationEntities.stream().map(item->locationMapper.toResponse(item)).collect(Collectors.toList());
     }
 
@@ -76,8 +82,14 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public List<String> findAllWarehouse() {
-        return locationRepository.findAllWarehouse();
+    public List<String> findAllWarehouse(Boolean isOUT) {
+        List<String> warehouses = null;
+        if(isOUT == null || isOUT == false){
+            warehouses = locationRepository.findAllWarehouseByWarehouseNotLike(OUT);
+        } else{
+            warehouses = locationRepository.findAllWarehouse();
+        }
+        return warehouses;
     }
 
     @Override

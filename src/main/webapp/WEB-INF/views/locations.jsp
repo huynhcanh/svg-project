@@ -147,10 +147,7 @@
                 {
                     data: null,
                     'render': function (data, type, full, meta){
-                        if(!(data.warehouse === 'OUT' && data.rack === 'OUT' && data.rack === 'OUT')){
-                            return '<input type="checkbox" name="ids" value="'+data.id+'">';
-                        }
-                        return '';
+                        return '<input type="checkbox" name="ids" value="'+data.id+'">';
                     }
                 }
             ],
