@@ -10,5 +10,5 @@ public interface ClassificationService {
     List<ClassificationResponse> findAll();
     ClassificationResponse createClassification(AddClassificationRequest addClassificationRequest);
     ClassificationResponse updateClassification(UpdateClassificationRequest updateClassificationRequest);
-    List<Long> deleteClassifications(List<Long> ids);
+    Long deleteClassification(Long id);
 }

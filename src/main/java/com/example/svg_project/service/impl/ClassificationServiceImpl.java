@@ -87,27 +87,22 @@ public class ClassificationServiceImpl implements ClassificationService {
 
     @Override
     @Transactional
-    public List<Long> deleteClassifications(List<Long> ids) {
-        List<ClassificationEntity> classificationEntities = classificationRepository.findAll();
-        Long idCheck = EntityUtils.isEntityIdsConstantIds(classificationEntities, ids);
-        if(idCheck != -1){
-            throw new NotFoundException(ExceptionUtils.notFoundMessage("id = " + idCheck));
+    public Long deleteClassification(Long id) {
+        Optional<ClassificationEntity> optionalClassificationEntity
+                = classificationRepository.findById(id);
+        if(!optionalClassificationEntity.isPresent()){
+            throw new NotFoundException(ExceptionUtils.notFoundMessage("id = " + id));
         }
 
-        List<Long> listIdDelete = new ArrayList();
-        classificationEntities = classificationRepository.findByIdIn(ids);
-        for(ClassificationEntity classificationEntity: classificationEntities){
-            // set location in all item to null
-            List<ItemEntity> itemEntities = classificationEntity.getItems();
-            for(ItemEntity itemEntity: itemEntities){
-                itemEntity.setClassification(null);
-                itemRepository.save(itemEntity);
-            }
-            // add list result
-            listIdDelete.add(classificationEntity.getId());
+        ClassificationEntity classificationEntity = optionalClassificationEntity.get();
+        // set classification in all item to null
+        List<ItemEntity> itemEntities = classificationEntity.getItems();
+        for(ItemEntity itemEntity: itemEntities){
+            itemEntity.setClassification(null);
+            itemRepository.save(itemEntity);
         }
-        // delete list location checked
-        classificationRepository.deleteByIdIn(ids);
-        return listIdDelete;
+        // delete location checked
+        classificationRepository.deleteById(id);
+        return id;
     }
 }

@@ -33,7 +33,7 @@ public class ClassificationApi {
     }
 
     @DeleteMapping("/classifications")
-    public List<Long> deleteClassifications(@RequestBody List<Long> ids) {
-        return classificationService.deleteClassifications(ids);
+    public Long deleteClassifications(@RequestBody Long id) {
+        return classificationService.deleteClassification(id);
     }
 }

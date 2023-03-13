@@ -82,10 +82,8 @@
                         <h5 class="modal-title pull-left">Delete classification</h5>
                     </div>
                     <div class="modal-body">
-                        <form action="" id="formSubmitDeleteClassification">
                             <input type="hidden" id="idHiddenDeleteClassification" name="id"/>
                             Are you sure you want to delete this item?
-                        </form>
                     </div>
                     <div class="modal-footer">
                         <button id="btnDeleteClassificationSave" type="button" class="btn btn-link" data-dismiss="modal">Save changes</button>
@@ -123,8 +121,8 @@
                 { data: 'value' },
                 {
                     'render': function (data, type, full, meta){
-                        return '<button onclick=\"clickBtnEditOrDelete(' + full.id + ',\'' + full.value + '\', \'edit\')\" type=\"button\" class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#modal-edit\">Edit</button> ' +
-                            '<button onclick=\"clickBtnEditOrDelete(' + full.id + ',\'' + full.value + '\', \'delete\')\" type=\"button\" class=\"btn btn-danger\" data-toggle=\"modal\" data-target=\"#modal-delete\">Delete</button>';
+                        return '<button type="button"  onclick="clickBtnEditOrDelete(' + full.id + ',\'' + full.value + '\', \'edit\')" class="btn btn-primary editClassification" data-toggle="modal" data-target="#modal-edit">Edit</button> ' +
+                            '<button type="button" onclick="clickBtnEditOrDelete(' + full.id + ',\'' + full.value + '\', \'delete\')" class="btn btn-danger deleteClassification" data-toggle="modal" data-target="#modal-delete">Delete</button>';
                     }
                 }
             ],
@@ -142,46 +140,6 @@
             // //info: false,
             // autoWidth: false,
             // //bPaginate: false,
-        });
-
-        // Handle click on "Select all" control
-        $('#example-select-all').on('click', function(){
-            // Get all rows with search applied
-            var rows = table.rows({ 'search': 'applied' }).nodes();
-            // Check/uncheck checkboxes for all rows in the table
-            $('input[type="checkbox"]', rows).prop('checked', this.checked);
-        });
-        // Handle click on checkbox to set state of "Select all" control
-        $('#data-table-location tbody').on('change', 'input[type="checkbox"]', function(){
-            // If checkbox is not checked
-            if(!this.checked){
-                var el = $('#example-select-all').get(0);
-                // If "Select all" control is checked and has 'indeterminate' property
-                if(el && el.checked && ('indeterminate' in el)){
-                    // Set visual state of "Select all" control
-                    // as 'indeterminate'
-                    el.indeterminate = true;
-                }
-            }
-        });
-        // Handle form submission event
-        $('#frm-location').on('submit', function(e){
-            e.preventDefault();
-            var ids = [];
-            // Iterate over all checkboxes in the table
-            table.$('input[type="checkbox"]').each(function(e, v){
-                if(v.checked){
-                    ids.push(v.value);
-                }
-            });
-            callDB('/api/locations', 'delete', ids, function (result) {
-                if(result.status){
-                    table.ajax.reload();
-                    swal("Delete location!", "You have successfully deleted a location!", "success");
-                }else{
-                    swal(result.data);
-                }
-            });
         });
     });
 
@@ -204,28 +162,33 @@
         if(type=='edit'){
             $('#inputEditClassification').val(value);
             $('#idHiddenEditClassification').val(id);
-            handleClick("#formSubmitEditClassification", "#btnEditClassificationSave",
-                "/api/classifications", "put", function (result) {
-                    if(result.status){
-                        table.ajax.reload();
-                        swal("Edit classification!", "You have successfully edited a classification!", "success");
-                    }else{
-                        swal(result.data);
-                    }
-                });
         }else{
              $('#idHiddenDeleteClassification').val(id);
-             handleClick("#formSubmitDeleteClassification", "#btnDeleteClassificationSave", "/api/classifications", "delete",
-                 function (result) {
-                     if(result.status){
-                         table.ajax.reload();
-                         swal("Delete classification!", "You have successfully deleted a classification!", "success");
-                     }else{
-                         swal(result.data);
-                     }
-                 });
         }
     }
+
+    handleClick("#formSubmitEditClassification", "#btnEditClassificationSave",
+        "/api/classifications", "put", function (result) {
+            if(result.status){
+                table.ajax.reload();
+                swal("Edit classification!", "You have successfully edited a classification!", "success");
+            }else{
+                swal(result.data);
+            }
+        });
+
+    $('#btnDeleteClassificationSave').click(function (e) {
+        e.preventDefault();
+        var data = $('#idHiddenDeleteClassification').val();
+        callDB("/api/classifications",  "delete", data,  function (result) {
+            if(result.status){
+                table.ajax.reload();
+                swal("Delete classification!", "You have successfully deleted a classification!", "success");
+            }else{
+                swal(result.data);
+            }
+        });
+    });
 </script>
 </body>
 </html>

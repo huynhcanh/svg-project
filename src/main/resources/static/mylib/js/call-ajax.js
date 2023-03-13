@@ -29,13 +29,9 @@ function handleClick(idForm, idBtn, urlApi, type, cb){
         e.preventDefault();
         var data = {};
         var formData = $(idForm).serializeArray();
-        if(type == 'delete') {
-            data = [formData[0].value];
-        }else{
-            $.each(formData, function (i, v) {
-                data[""+v.name+""] = v.value;
-            });
-        }
+        $.each(formData, function (i, v) {
+            data[""+v.name+""] = v.value;
+        });
         callDB(urlApi, type, data, cb);
     });
 }
