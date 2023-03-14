@@ -1,17 +1,17 @@
 package com.example.svg_project.api;
 
-import com.example.svg_project.model.request.SortAndFilterItemRequest;
+import com.example.svg_project.model.request.PageItemRequest;
 import com.example.svg_project.model.request.UpdateItemRequest;
 import com.example.svg_project.model.response.ClassificationResponse;
 import com.example.svg_project.model.response.ItemResponse;
 import com.example.svg_project.model.response.UnitResponse;
+import com.example.svg_project.model.response.page.PageItemResponse;
 import com.example.svg_project.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -79,9 +79,10 @@ public class ItemApi {
         return itemService.findDistinctUnits();
     }
 
-    @PostMapping("/items/sort-filter")
-    public List<ItemResponse> sortAndFilterItems(@RequestBody SortAndFilterItemRequest sortAndfilter) {
-        return itemService.sortAndFilterItems(sortAndfilter);
+    @PostMapping("/items/page-request")
+    public PageItemResponse sortFilterPagingSearchItems(@RequestBody PageItemRequest pageItemRequest) {
+        System.out.println(pageItemRequest.getStart() + "-" + pageItemRequest.getLength());
+        return itemService.sortFilterPagingSearchItems(pageItemRequest);
     }
 
     @GetMapping("/items/dowload-form-excel")

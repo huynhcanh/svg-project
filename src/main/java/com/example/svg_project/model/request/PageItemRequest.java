@@ -14,7 +14,9 @@ import java.util.Map;
 @Setter
 @Getter
 @NoArgsConstructor
-public class SortAndFilterItemRequest {
+public class PageItemRequest {
     private Map<String, String> sort;
     private Map<String, List<String>> filter;
+    private int start, length;
+    private String itemName;
 }

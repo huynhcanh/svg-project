@@ -82,16 +82,15 @@
 <%--                </ul>--%>
 <%--            </li>--%>
 
-<%--            <li class="@@calendaractive"><a href="calendar.html"><i class="zmdi zmdi-calendar"></i> Calendar</a></li>--%>
-
             <li class="@@photogalleryactive"><a href="/items"><i class="zmdi zmdi-image"></i> Items</a></li>
             <li class="navigation__sub @@tableactive">
                 <a href="#"><i class="zmdi zmdi-view-list"></i> Managements</a>
                 <ul>
-                    <li class="@@normaltableactive"><a href="/managements">Move</a></li>
+                    <li class="@@normaltableactive"><a href="/moves">Move</a></li>
                     <li class="@@datatableactive"><a href="/history">History</a></li>
                 </ul>
             </li>
+    <li class="@@calendaractive"><a href="/scan-qr"><i class="zmdi zmdi-calendar"></i> Scan QR</a></li>
 <%--            <li class="navigation__sub @@samplepagesactive">--%>
 <%--                <a href="#"><i class="zmdi zmdi-collection-item"></i> Sample Pages</a>--%>
 

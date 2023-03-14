@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class ManagementController {
+public class MoveController {
 
-    @RequestMapping(value = "/managements", method = RequestMethod.GET)
+    @RequestMapping(value = "/moves", method = RequestMethod.GET)
     public ModelAndView managementsPage() {
         ModelAndView mav = new ModelAndView("moves");
         return mav;

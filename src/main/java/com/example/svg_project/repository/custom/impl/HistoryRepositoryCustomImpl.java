@@ -1,22 +1,13 @@
 package com.example.svg_project.repository.custom.impl;
 
 import com.example.svg_project.entity.HistoryEntity;
-import com.example.svg_project.entity.ItemEntity;
 import com.example.svg_project.model.request.HistoryRequest;
-import com.example.svg_project.model.request.SortAndFilterItemRequest;
-import com.example.svg_project.model.response.ClassificationResponse;
-import com.example.svg_project.model.response.UnitResponse;
 import com.example.svg_project.repository.custom.HistoryRepositoryCustom;
-import com.example.svg_project.repository.custom.ItemRepositoryCustom;
-import com.example.svg_project.utils.FormatUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public class HistoryRepositoryCustomImpl implements HistoryRepositoryCustom {

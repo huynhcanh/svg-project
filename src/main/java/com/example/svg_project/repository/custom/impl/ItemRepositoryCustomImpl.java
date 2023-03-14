@@ -1,24 +1,18 @@
 package com.example.svg_project.repository.custom.impl;
 
 import com.example.svg_project.entity.ItemEntity;
-import com.example.svg_project.model.mapper.ItemMapper;
-import com.example.svg_project.model.request.SortAndFilterItemRequest;
+import com.example.svg_project.model.request.PageItemRequest;
 import com.example.svg_project.model.response.ClassificationResponse;
-import com.example.svg_project.model.response.ItemResponse;
 import com.example.svg_project.model.response.UnitResponse;
 import com.example.svg_project.repository.custom.ItemRepositoryCustom;
 import com.example.svg_project.utils.FormatUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Repository
 public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
@@ -90,11 +84,10 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         return entityManager.createQuery(query.toString(), String.class).getResultList();
     }
 
-    @Override
-    public List<ItemEntity> sortAndFilterItems(SortAndFilterItemRequest sortAndfilter) {
+    public String generateQuery(PageItemRequest pageItemRequest, String select){
         // Khởi tạo câu query
         StringBuilder query = new StringBuilder();
-        query.append("SELECT i FROM ItemEntity i ");
+        query.append("SELECT ").append(select).append(" FROM ItemEntity i ");
 
         // Khởi tạo các biến để chứa query cho phần join, where, filter và sort
         StringBuilder joinQuery = new StringBuilder();
@@ -102,7 +95,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         StringBuilder filterQuery = new StringBuilder();
         StringBuilder sortQuery = new StringBuilder();
 
-        Map<String, String> sort = sortAndfilter.getSort();
+        Map<String, String> sort = pageItemRequest.getSort();
         if (sort != null) {
             for (String key : sort.keySet()) {
                 String value = sort.get(key);
@@ -123,7 +116,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
             }
         }
 
-        Map<String, List<String>> filter = sortAndfilter.getFilter();
+        Map<String, List<String>> filter = pageItemRequest.getFilter();
         if(filter != null){
             for (String key : filter.keySet()) {
                 List<String> values = filter.get(key);
@@ -149,6 +142,12 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
             }
         }
 
+        String itemName = pageItemRequest.getItemName();
+        if(!itemName.isEmpty()){
+            filterQuery.append("i.name like '%").append(itemName)
+                    .append("%'").append(" AND ");
+        }
+
         // Thêm các phần query vào câu query chính
         if (joinQuery.length() > 0) {
             query.append(joinQuery);
@@ -167,9 +166,24 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         }
 
         System.out.println(query.toString());
+        return query.toString();
+    }
 
-        // Execute the query and retrieve the list of matching items
-        List<ItemEntity> items = entityManager.createQuery(query.toString(), ItemEntity.class).getResultList();
+    @Override
+    public long getRecordsTotal(PageItemRequest pageItemRequest){
+        String queryJPA = generateQuery(pageItemRequest, "count(i.id)");
+        return (long) entityManager.createQuery(queryJPA).getSingleResult();
+    }
+
+    @Override
+    public List<ItemEntity> sortFilterPagingSearchItems(PageItemRequest pageItemRequest) {
+        String queryJPA = generateQuery(pageItemRequest, "i");
+
+        int start = pageItemRequest.getStart();
+        int length = pageItemRequest.getLength();
+
+        List<ItemEntity> items = entityManager.createQuery(queryJPA, ItemEntity.class)
+                .setFirstResult(start).setMaxResults(length).getResultList();
         return items;
     }
 }

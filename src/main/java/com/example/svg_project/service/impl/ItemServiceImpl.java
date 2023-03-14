@@ -1,21 +1,17 @@
 package com.example.svg_project.service.impl;
 
 import com.example.svg_project.entity.ItemEntity;
-import com.example.svg_project.entity.ItemLocationEntity;
-import com.example.svg_project.entity.LocationEntity;
 import com.example.svg_project.exception.NotFoundException;
 import com.example.svg_project.model.excel.AddItemExcelRequest;
 import com.example.svg_project.model.excel.ItemExcel;
 import com.example.svg_project.model.mapper.ItemDeleteMapper;
 import com.example.svg_project.model.mapper.ItemMapper;
-import com.example.svg_project.model.request.AddItemLocationRequest;
-import com.example.svg_project.model.request.MoveItemRequest;
-import com.example.svg_project.model.request.SortAndFilterItemRequest;
+import com.example.svg_project.model.request.PageItemRequest;
 import com.example.svg_project.model.request.UpdateItemRequest;
 import com.example.svg_project.model.response.ClassificationResponse;
-import com.example.svg_project.model.response.ItemLocationResponse;
 import com.example.svg_project.model.response.ItemResponse;
 import com.example.svg_project.model.response.UnitResponse;
+import com.example.svg_project.model.response.page.PageItemResponse;
 import com.example.svg_project.repository.ItemDeleteRepository;
 import com.example.svg_project.repository.ItemLocationRepository;
 import com.example.svg_project.repository.ItemRepository;
@@ -169,16 +165,18 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemResponse> sortAndFilterItems(SortAndFilterItemRequest sortAndfilter) {
-        List<ItemEntity> itemEntities = null;
-        if(sortAndfilter.getFilter().isEmpty() && sortAndfilter.getSort().isEmpty()){
-            System.out.println("FIND ALL");
-            itemEntities = itemRepository.findAll();
-        } else{
-            System.out.println("SORT AND FILTER");
-            itemEntities = itemRepository.sortAndFilterItems(sortAndfilter);
-        }
-        return itemEntities.stream().map(item->itemMapper.toResponse(item)).collect(Collectors.toList());
+    public PageItemResponse sortFilterPagingSearchItems(PageItemRequest pageItemRequest) {
+        List<ItemEntity> itemEntities = itemRepository.sortFilterPagingSearchItems(pageItemRequest);
+        // get data
+        List<ItemResponse> data = itemEntities.stream().map(item->itemMapper.toResponse(item)).collect(Collectors.toList());
+        // get recordsTotal || recordsFiltered
+        long recordsTotal = itemRepository.getRecordsTotal(pageItemRequest);
+
+        PageItemResponse pageItemResponse = PageItemResponse.builder()
+                .recordsTotal(recordsTotal)
+                .data(data)
+                .build();
+        return pageItemResponse;
     }
 
     @Override

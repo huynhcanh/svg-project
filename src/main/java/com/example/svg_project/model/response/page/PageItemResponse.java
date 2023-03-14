@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ItemPage {
+public class PageItemResponse {
     private long recordsTotal;
     private List<ItemResponse> data;
 }

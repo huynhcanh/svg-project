@@ -5,23 +5,6 @@
     <title>History Title</title>
 </head>
 <body>
-<header class="content__title">
-    <h1>DATA TABLES</h1>
-
-    <div class="actions">
-        <a href="#" class="actions__item zmdi zmdi-trending-up"></a>
-        <a href="#" class="actions__item zmdi zmdi-check-all"></a>
-
-        <div class="dropdown actions__item">
-            <i data-toggle="dropdown" class="zmdi zmdi-more-vert"></i>
-            <div class="dropdown-menu dropdown-menu-right">
-                <a href="#" class="dropdown-item">Refresh</a>
-                <a href="#" class="dropdown-item">Manage Widgets</a>
-                <a href="#" class="dropdown-item">Settings</a>
-            </div>
-        </div>
-    </div>
-</header>
 
 <div class="card">
     <div class="card-body">
@@ -52,20 +35,21 @@
 <script src="/mylib/js/call-ajax.js"></script>
 
 <script>
+    var historyRequest = {
+        fromHistory: $('#fromHistory').val(),
+        toHistory: $('#toHistory').val()
+    }
+
     var table;
     $(document).ready(function () {
         table = $('#data-table-history').DataTable({
             ajax: {
                 url: '/api/histories/filter',
                 contentType: 'application/json',
-                type: 'POST',
+                dataType: 'json',
+                method: 'POST',
                 data: function (d) {
-                    var fromHistory = $('#fromHistory').val();
-                    var toHistory = $('#toHistory').val();
-                    return JSON.stringify({
-                        fromHistory: fromHistory,
-                        toHistory: toHistory
-                    });
+                    return JSON.stringify(historyRequest);
                 },
                 dataSrc: function (json) {
                     return json;
@@ -103,31 +87,13 @@
     });
 
     $("#fromHistory").change(function() {
-        var fromHistory = $(this).val();
-        var toHistory = $('#toHistory').val();
-        callDB('/api/histories/filter', 'post', {fromHistory, toHistory}, function (result) {
-            if(result.status){
-                table.clear();
-                table.rows.add(result.data);
-                table.draw();
-            }else{
-                console.log('that bai');
-            }
-        });
+        historyRequest.fromHistory = $(this).val();
+        table.ajax.reload();
     });
 
     $("#toHistory").change(function() {
-        var fromHistory = $('#fromHistory').val();
-        var toHistory = $(this).val();
-        callDB('/api/histories/filter', 'post', {fromHistory, toHistory}, function (result) {
-            if(result.status){
-                table.clear();
-                table.rows.add(result.data);
-                table.draw();
-            }else{
-                console.log('that bai');
-            }
-        });
+        historyRequest.toHistory = $(this).val();
+        table.ajax.reload();
     });
 
     $('#exportExcel').click(function (e) {

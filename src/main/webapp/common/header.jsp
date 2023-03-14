@@ -5,7 +5,7 @@
     </div>
 
     <div class="logo hidden-sm-down">
-        <h1><a href="index-2.html">Super Admin 2.0</a></h1>
+<%--        <h1><a href="index-2.html">Super Admin 2.0</a></h1>--%>
     </div>
 
     <form class="search">

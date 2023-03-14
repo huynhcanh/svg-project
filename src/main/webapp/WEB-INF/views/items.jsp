@@ -7,24 +7,6 @@
 <body>
 <link rel="stylesheet" href="/mylib/css/show-img-modal.css">
 
-<header class="content__title">
-    <h1>DATA TABLES</h1>
-
-    <div class="actions">
-        <a href="#" class="actions__item zmdi zmdi-trending-up"></a>
-        <a href="#" class="actions__item zmdi zmdi-check-all"></a>
-
-        <div class="dropdown actions__item">
-            <i data-toggle="dropdown" class="zmdi zmdi-more-vert"></i>
-            <div class="dropdown-menu dropdown-menu-right">
-                <a href="#" class="dropdown-item">Refresh</a>
-                <a href="#" class="dropdown-item">Manage Widgets</a>
-                <a href="#" class="dropdown-item">Settings</a>
-            </div>
-        </div>
-    </div>
-</header>
-
 <div class="card">
     <div class="card-body">
         <h4 class="card-title">Item</h4>
@@ -258,19 +240,31 @@
     $(document).ready(function (){
         table = $('#data-table-item').DataTable({
             ajax: {
-                url: '/api/items/sort-filter',
+                url: '/api/items/page-request',
                 method: 'POST',
                 contentType: 'application/json',
                 dataType: 'json',
                 data: function (d) {
-                    return JSON.stringify(filterData);
+                    // d.draw xác định request mới nhất từ datatable gửi đi
+                    filterData.start = d.start || 0;
+                    filterData.length = d.length || 10;
+                    filterData.itemName = d.search.value;
+                    console.log(d);
+                    return JSON.stringify(filterData); // get -> request param, post put -> request body
                 },
-                dataSrc: ''
+                dataSrc: function (json) { // xử lý kết quả tìm kiếm từ API trước khi trả về cho DataTable
+                    /*
+                    recordsTotal: tổng số lượng record có trong database, không phân biệt bất kỳ điều kiện tìm kiếm nào
+                    recordsFiltered: số lượng record sau khi áp dụng các điều kiện tìm kiếm
+                     */
+                    json.recordsFiltered = json.recordsTotal;
+                    return json.data; // chỉ định array để render dữ liệu ra datatable
+                }
             },
-            'columns': [
+            columns: [
                 {
                     data: 'classification',
-                    'render': function (data, type, full, meta) {
+                    render: function (data, type, full, meta) {
                         return (data) ? data.value: null;
                     }
                 },
@@ -278,7 +272,7 @@
                 { data: 'name' },
                 {
                     data: 'unit',
-                    'render': function (data, type, full, meta) {
+                    render: function (data, type, full, meta) {
                         return (data) ? data.value: null;
                     }
                 },
@@ -286,29 +280,46 @@
                 { data: 'remark' },
                 {
                   data: 'id',
-                  'render': function (data, type, full, meta){
+                  render: function (data, type, full, meta){
                       return '<img alt="qr image" class="item-img-qr" src="/api/generate-qr?id=' + data + '" width="50">'
                   }
                 },
                 {
                     data: 'id',
-                    'render': function (data, type, full, meta){
+                    render: function (data, type, full, meta){
                         return '<input type="checkbox" name="ids" value="'+data+'">';
                     }
                 },
                 {
                     data: 'id',
                     width: '200px',
-                    'render': function (data, type, full, meta){
+                    render: function (data, type, full, meta){
                         return '<button value="'+data+'" type="button" class="btnEditItem btn btn-info"' +
                             'data-toggle="modal" data-target="#modal-edit">Edit</button>';
                     }
                 }
             ],
             dom: 'Bfrtip',
-            filter: false,
+            // retrieve: true,
+            // autoWidth: false,
+            // bPaginate: true
+            pageLength: 4, // số item hiển thị trong 1 page
+            processing: true, // hiển thị một thông báo khi DataTable đang xử lý dữ liệu ở giữa bảng (thường là một icon hoặc một vòng quay). Khi DataTable xử lý dữ liệu, thông thường các thao tác khác trên bảng sẽ bị tạm dừng để tránh xung đột hoặc gây ra lỗi => processing
+            serverSide: true,
+            filter: true,
             bSort: false,
-            "drawCallback": function( settings ) { // active when draw done datatable
+                // order: [[0, 'asc']], // sắp xếp theo cột - hoạt động khi bSort: true
+                // orderCellsTop: true, // tiêu đề cột (column headers) có được sắp xếp (sortable) khi người dùng bấm vào chúng hay không - hoạt động khi bSort: true
+            // info: false, // Show info 'Showing 1 to 2 of 4 entries'
+            // lengthChange: true, // hiển thị dropdown với các tùy chọn số lượng hàng và cho phép người dùng thay đổi số lượng hàng hiển thị trên mỗi trang
+            // destroy: true, // hủy datatable khi nó được ẩn
+            initComplete: function () { // được gọi duy nhất một lần, sau khi DataTable được khởi tạo hoàn toàn
+
+            },
+            // rowCallback: function(row, data, index) { // được gọi mỗi khi một hàng (row) trong bảng được vẽ hoặc vẽ lại
+            //
+            // }
+            drawCallback: function( settings ) { // được gọi mỗi khi DataTable được vẽ lại
                 // show Qr image
                 $('.item-img-qr').click(function (e) {
                     handleShowFullImg(this, "my-modal", "img-my-modal", "close-my-modal");
@@ -339,9 +350,6 @@
                     });
                 });
             }
-            // "rowCallback": function( row, data ) { // active when draw done datatable
-            //     console.log(row,data);
-            // }
         });
 
         // Handle click on "Select all" control
@@ -378,14 +386,6 @@
         else if(index == '3') return "unit";
         else if(index == '4') return "color";
         else if(index == '5') return "remark";
-    }
-
-    function mergeSortAndFilter(sorts, filters) {
-        let result = {
-            sort: sorts,
-            filter: filters
-        };
-        return result;
     }
 
     var isFilterListOpen = [false, false, false, false, false, false];
@@ -466,8 +466,7 @@
                             delete filters[key];
                         }
                     }
-                    filterData = mergeSortAndFilter(sorts, filters);
-                    //console.log(object);
+                    filterData.filter = filters;
                     table.ajax.reload();
                 });
             }
@@ -501,8 +500,7 @@
             }
         }
 
-        filterData = mergeSortAndFilter(sorts, filters);
-        // console.log(object);
+        filterData.sort = sorts;
         table.ajax.reload();
     });
 
@@ -650,8 +648,6 @@
             }
         });
     });
-
-
 </script>
 </body>
 </html>
