@@ -55,19 +55,19 @@
     var table;
     $(document).ready(function () {
         table = $('#data-table-history').DataTable({
-            processing: true,
-            serverSide: true,
             ajax: {
                 url: '/api/histories/filter',
                 contentType: 'application/json',
                 type: 'POST',
-                data: function ( d ) {
-                    d.fromHistory = $('#fromHistory').val();
-                    d.toHistory = $('#toHistory').val();
-                    return JSON.stringify( d );
+                data: function (d) {
+                    var fromHistory = $('#fromHistory').val();
+                    var toHistory = $('#toHistory').val();
+                    return JSON.stringify({
+                        fromHistory: fromHistory,
+                        toHistory: toHistory
+                    });
                 },
                 dataSrc: function (json) {
-                    // Xử lý kết quả tìm kiếm từ API trước khi trả về cho DataTable
                     return json;
                 }
             },

@@ -129,12 +129,12 @@
     var table;
     $(document).ready(function (){
         table = $('#data-table-location').DataTable({
-            'ajax': {
-                'url': '/api/locations',
-                'method': 'GET',
-                'dataSrc': ''
+            ajax: {
+                url: '/api/locations',
+                method: 'GET',
+                dataSrc: ''
             },
-            'columns': [
+            columns: [
                 { data: 'warehouse' },
                 { data: 'rack' },
                 { data: 'tray' },
@@ -146,7 +146,7 @@
                 },
                 {
                     data: null,
-                    'render': function (data, type, full, meta){
+                    render: function (data, type, full, meta){
                         return '<input type="checkbox" name="ids" value="'+data.id+'">';
                     }
                 }
@@ -154,7 +154,7 @@
             dom: 'Bfrtip',
             filter: false,
             bSort: false,
-            "drawCallback": function( settings ) { // active when draw done datatable
+            drawCallback: function( settings ) { // active when draw done datatable
                 // show Qr image
                 $('.item-img-qr').click(function (e) {
                     handleShowFullImg(this, "my-modal", "img-my-modal", "close-my-modal");

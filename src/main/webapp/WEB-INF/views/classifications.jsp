@@ -82,8 +82,8 @@
                         <h5 class="modal-title pull-left">Delete classification</h5>
                     </div>
                     <div class="modal-body">
-                            <input type="hidden" id="idHiddenDeleteClassification" name="id"/>
-                            Are you sure you want to delete this item?
+                        <input type="hidden" id="idHiddenDeleteClassification" name="id"/>
+                        Are you sure you want to delete this item?
                     </div>
                     <div class="modal-footer">
                         <button id="btnDeleteClassificationSave" type="button" class="btn btn-link" data-dismiss="modal">Save changes</button>
@@ -112,12 +112,12 @@
     var table;
     $(document).ready(function (){
         table = $('#data-table-classification').DataTable({
-            'ajax': {
-                'url': '/api/classifications',
-                'method': 'GET',
-                'dataSrc': ''
+            ajax: {
+                url: '/api/classifications',
+                method: 'GET',
+                dataSrc: ''
             },
-            'columns': [
+            columns: [
                 { data: 'value' },
                 {
                     'render': function (data, type, full, meta){
@@ -126,20 +126,25 @@
                     }
                 }
             ],
-            // order: [[0, 'asc']],
-            // pageLength: 100,
-            // lengthChange: false,
             dom: 'Bfrtip',
-            // orderCellsTop: true,
-            // destroy: true,
             // retrieve: true,
-            // processing: true,
-            // serverSide: true,
+            // autoWidth: false,
+            // bPaginate: true
+            //processing: true, // hiển thị một thông báo khi DataTable đang xử lý dữ liệu ở giữa bảng (thường là một icon hoặc một vòng quay). Khi DataTable xử lý dữ liệu, thông thường các thao tác khác trên bảng sẽ bị tạm dừng để tránh xung đột hoặc gây ra lỗi => processing
+            //serverSide: true, // nhận các tham số phân trang từ Datatable gửi lên
             filter: false,
             bSort: false,
-            // //info: false,
-            // autoWidth: false,
-            // //bPaginate: false,
+            // order: [[0, 'asc']], // sắp xếp theo cột - hoạt động khi bSort: true
+            // orderCellsTop: true, // tiêu đề cột (column headers) có được sắp xếp (sortable) khi người dùng bấm vào chúng hay không - hoạt động khi bSort: true
+            // info: false, // Show info 'Showing 1 to 2 of 4 entries'
+            // lengthChange: true, // hiển thị dropdown với các tùy chọn số lượng hàng và cho phép người dùng thay đổi số lượng hàng hiển thị trên mỗi trang
+            // destroy: true, // hủy datatable khi nó được ẩn
+            // initComplete: function () { // được gọi duy nhất một lần, sau khi DataTable được khởi tạo hoàn toàn
+            //
+            // }
+            // drawCallback: function( settings ) { // được gọi mỗi khi DataTable được vẽ lại
+            //
+            // }
         });
     });
 
@@ -163,7 +168,7 @@
             $('#inputEditClassification').val(value);
             $('#idHiddenEditClassification').val(id);
         }else{
-             $('#idHiddenDeleteClassification').val(id);
+            $('#idHiddenDeleteClassification').val(id);
         }
     }
 

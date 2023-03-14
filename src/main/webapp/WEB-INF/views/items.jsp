@@ -248,13 +248,24 @@
 <script src="/mylib/js/convert-object-to-form.js"></script>
 
 <script>
+
+    var filterData = {
+        sort: {},
+        filter: {}
+    };
+
     var table;
     $(document).ready(function (){
         table = $('#data-table-item').DataTable({
-            'ajax': {
-                'url': '/api/items',
-                'method': 'GET',
-                'dataSrc': ''
+            ajax: {
+                url: '/api/items/sort-filter',
+                method: 'POST',
+                contentType: 'application/json',
+                dataType: 'json',
+                data: function (d) {
+                    return JSON.stringify(filterData);
+                },
+                dataSrc: ''
             },
             'columns': [
                 {
@@ -392,7 +403,9 @@
     var filters = {};
     var sorts = {};
 
-    $('.filter-icon').click(function() {
+    $('.filter-icon').click(function(e) {
+        e.preventDefault();
+
         const index = $('.filter-icon').index(this);
         if (!isFilterListOpen[index]) {
             isFilterListOpen[index] = true;
@@ -453,17 +466,9 @@
                             delete filters[key];
                         }
                     }
-                    var object = mergeSortAndFilter(sorts, filters);
-                    var object = mergeSortAndFilter(sorts, filters);
-                    callDB("/api/items/sort-filter", "POST", object, function(result){
-                        if(result.status){
-                            table.clear();
-                            // thêm các hàng mới vào DataTable từ danh sách item trả về của API POST
-                            table.rows.add(result.data);
-                            // vẽ lại DataTable
-                            table.draw();
-                        }
-                    });
+                    filterData = mergeSortAndFilter(sorts, filters);
+                    //console.log(object);
+                    table.ajax.reload();
                 });
             }
 
@@ -471,12 +476,13 @@
         } else {
             isFilterListOpen[index] = false;
             // Ẩn danh sách checkbox
-            console.log('close'+index);
             $(this).next().hide();
         }
     });
 
-    $('.sort-icon').click(function(){
+    $('.sort-icon').click(function(e){
+        e.preventDefault();
+
         const index = $('.sort-icon').index(this);
         const newSort = {[fomatKey(index)]: "asc"};
 
@@ -495,16 +501,9 @@
             }
         }
 
-        var object = mergeSortAndFilter(sorts, filters);
-        callDB("/api/items/sort-filter", "POST", object, function(result){
-            if(result.status){
-                table.clear();
-                // thêm các hàng mới vào DataTable từ danh sách item trả về của API POST
-                table.rows.add(result.data);
-                // vẽ lại DataTable
-                table.draw();
-            }
-        });
+        filterData = mergeSortAndFilter(sorts, filters);
+        // console.log(object);
+        table.ajax.reload();
     });
 
     // open add modal

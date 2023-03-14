@@ -2,6 +2,7 @@ package com.example.svg_project.service.impl;
 
 import com.example.svg_project.entity.ClassificationEntity;
 import com.example.svg_project.entity.ItemEntity;
+import com.example.svg_project.entity.UnitEntity;
 import com.example.svg_project.exception.NotFoundException;
 import com.example.svg_project.exception.ValueExistException;
 import com.example.svg_project.model.mapper.ClassificationMapper;
@@ -11,14 +12,14 @@ import com.example.svg_project.model.response.ClassificationResponse;
 import com.example.svg_project.repository.ClassificationRepository;
 import com.example.svg_project.repository.ItemRepository;
 import com.example.svg_project.service.ClassificationService;
-import com.example.svg_project.utils.EntityUtils;
 import com.example.svg_project.utils.ExceptionUtils;
 import com.example.svg_project.utils.FormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

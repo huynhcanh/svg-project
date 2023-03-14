@@ -11,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface ItemService {
-    List<ItemResponse> findAll();
     ItemResponse getItem(Long id);
     ItemResponse updateItem(UpdateItemRequest updateItemRequest);
     List<Long> deleteItems(List<Long> ids);

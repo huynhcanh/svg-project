@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -19,11 +20,6 @@ public class ItemApi {
 
     @Autowired
     ItemService itemService;
-
-    @GetMapping("/items")
-    public List<ItemResponse> findAll() {
-        return itemService.findAll();
-    }
 
     @GetMapping("/item")
     public ItemResponse getItem(@RequestParam Long id) {

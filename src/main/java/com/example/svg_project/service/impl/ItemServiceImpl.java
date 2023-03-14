@@ -58,12 +58,6 @@ public class ItemServiceImpl implements ItemService {
     ItemLocationRepository itemLocationRepository;
 
     @Override
-    public List<ItemResponse> findAll() {
-        List<ItemEntity> itemEntities = itemRepository.findAll();
-        return itemEntities.stream().map(item->itemMapper.toResponse(item)).collect(Collectors.toList());
-    }
-
-    @Override
     public ItemResponse getItem(Long id) {
         Optional<ItemEntity> optionalItemEntity = itemRepository.findById(id);
         if(!optionalItemEntity.isPresent()){
@@ -176,7 +170,14 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemResponse> sortAndFilterItems(SortAndFilterItemRequest sortAndfilter) {
-        List<ItemEntity> itemEntities = itemRepository.sortAndFilterItems(sortAndfilter);
+        List<ItemEntity> itemEntities = null;
+        if(sortAndfilter.getFilter().isEmpty() && sortAndfilter.getSort().isEmpty()){
+            System.out.println("FIND ALL");
+            itemEntities = itemRepository.findAll();
+        } else{
+            System.out.println("SORT AND FILTER");
+            itemEntities = itemRepository.sortAndFilterItems(sortAndfilter);
+        }
         return itemEntities.stream().map(item->itemMapper.toResponse(item)).collect(Collectors.toList());
     }
 
