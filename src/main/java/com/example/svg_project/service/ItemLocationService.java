@@ -13,5 +13,4 @@ public interface ItemLocationService {
     List<ItemLocationResponse> findAll();
     List<ItemLocationResponse> getItems(List<Long> ids);
     List<ItemLocationResponse> moveItemLocations(MoveItemRequest moveItemRequest);
-
 }

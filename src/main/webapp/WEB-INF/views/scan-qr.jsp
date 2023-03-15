@@ -13,16 +13,38 @@
                 <i class="fas fa-qrcode"></i> Scan QR Code
             </button>
         </div>
-        <div class="text-center">
-            <video id="video" height="450"></video>
+        <div style="display: flex; margin-top: 5px;">
+            <div style="flex: 1">
+                <video id="video"></video>
+            </div>
+            <div style="padding: 0 5px;">
+                <table id="item-table">
+                    <thead>
+                        <tr>
+                            <th>Item ID</th>
+                            <th>Warehouse</th>
+                            <th>Rack</th>
+                            <th>Tray</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
+
 <script src="https://unpkg.com/@zxing/library@0.18.4"></script>
+<script src="/mylib/js/call-ajax.js"></script>
+
 <script>
     // Lấy đối tượng video và button từ HTML
     const video = $('#video');
     const scanButton = $('#scan-button');
+
+    // css
+    $('#item-table thead').css('display', 'none');
 
     // Thiết lập đối tượng quét mã QR
     const qrCodeScanner = new ZXing.BrowserQRCodeReader();
@@ -44,16 +66,49 @@
                     // Quét mã QR
                     qrCodeScanner.decodeFromVideoDevice(null, 'video', function(result) {
                         if(result){
-                            console.log(result.text);
+                            // Xử lý mã QR tại đây
+                            var itemId = result.text;
+                            console.log(itemId);
+                            callDB('/api/items/scan-qr?itemId='+ itemId, 'GET', null, function (result) {
+
+                                $('#item-table tbody').text('');
+
+                                // Chọn đối tượng table
+                                var table = $('#item-table');
+
+                                var data = result.data;
+                                if(result.status){
+                                    $.each(data, function(index, item) {
+                                        var row = $('<tr>');
+                                        $('<td>').html(item.item.id).appendTo(row);
+                                        $('<td>').html(item.location.warehouse).appendTo(row);
+                                        $('<td>').html(item.location.rack).appendTo(row);
+                                        $('<td>').html(item.location.tray).appendTo(row);
+                                        $('<td>').html(item.quantity).appendTo(row);
+                                        $('#item-table tbody').append(row);
+                                    });
+
+                                    // Hiển thị lại title
+                                    $('#item-table thead').css('display', 'contents');
+                                    // CSS lại các cột và dòng trong table
+                                    table.find('th, td').css({'border': '1px solid #ddd', 'padding': '8px', 'text-align': 'left', 'background': 'black'});
+                                    // CSS lại tiêu đề bảng
+                                    table.find('th').css({'background-color': '#4CAF50', 'color': 'white'});
+                                } else{
+                                    $('#item-table thead').css('display', 'none');
+                                    var row = $('<tr>');
+                                    $('<td>').html(data).appendTo(row);
+                                    $('#item-table tbody').append(row);
+                                    table.find('th, td').css({'color': 'red', 'background': 'black'});
+                                }
+                            });
                         }
-                        // Xử lý mã QR tại đây
                     });
                 })
                 .catch(function(error) {
                     console.log(error);
                 });
         } else {
-            console.log(123);
             qrCodeScanner.reset();
             isScanning = false;
             scanButton.text('Scan QR Code');

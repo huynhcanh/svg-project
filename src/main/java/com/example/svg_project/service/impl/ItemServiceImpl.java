@@ -1,14 +1,17 @@
 package com.example.svg_project.service.impl;
 
 import com.example.svg_project.entity.ItemEntity;
+import com.example.svg_project.entity.ItemLocationEntity;
 import com.example.svg_project.exception.NotFoundException;
 import com.example.svg_project.model.excel.AddItemExcelRequest;
 import com.example.svg_project.model.excel.ItemExcel;
 import com.example.svg_project.model.mapper.ItemDeleteMapper;
+import com.example.svg_project.model.mapper.ItemLocationMapper;
 import com.example.svg_project.model.mapper.ItemMapper;
 import com.example.svg_project.model.request.PageItemRequest;
 import com.example.svg_project.model.request.UpdateItemRequest;
 import com.example.svg_project.model.response.ClassificationResponse;
+import com.example.svg_project.model.response.ItemLocationResponse;
 import com.example.svg_project.model.response.ItemResponse;
 import com.example.svg_project.model.response.UnitResponse;
 import com.example.svg_project.model.response.page.PageItemResponse;
@@ -52,6 +55,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Autowired
     ItemLocationRepository itemLocationRepository;
+
+    @Autowired
+    ItemLocationMapper itemLocationMapper;
 
     @Override
     public ItemResponse getItem(Long id) {
@@ -196,5 +202,15 @@ public class ItemServiceImpl implements ItemService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public List<ItemLocationResponse> getListItemLocationByItemId(Long itemId) {
+        Optional<ItemEntity> optionalItemEntity = itemRepository.findById(itemId);
+        if(!optionalItemEntity.isPresent()){
+            throw new NotFoundException(ExceptionUtils.notFoundMessage("id"));
+        }
+        List<ItemLocationEntity> itemLocationEntities =  optionalItemEntity.get().getItemLocations();
+        return itemLocationEntities.stream().map(item->itemLocationMapper.toResponse(item)).collect(Collectors.toList());
     }
 }

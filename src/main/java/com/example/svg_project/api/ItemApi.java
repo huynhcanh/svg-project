@@ -3,9 +3,11 @@ package com.example.svg_project.api;
 import com.example.svg_project.model.request.PageItemRequest;
 import com.example.svg_project.model.request.UpdateItemRequest;
 import com.example.svg_project.model.response.ClassificationResponse;
+import com.example.svg_project.model.response.ItemLocationResponse;
 import com.example.svg_project.model.response.ItemResponse;
 import com.example.svg_project.model.response.UnitResponse;
 import com.example.svg_project.model.response.page.PageItemResponse;
+import com.example.svg_project.service.ItemLocationService;
 import com.example.svg_project.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -88,5 +90,10 @@ public class ItemApi {
     @GetMapping("/items/dowload-form-excel")
     public void dowloadFromExcelItems() {
         itemService.dowloadFromExcelItems();
+    }
+
+    @GetMapping("/items/scan-qr")
+    public List<ItemLocationResponse> getListItemLocationByItemId(@RequestParam Long itemId) {
+        return itemService.getListItemLocationByItemId(itemId);
     }
 }

@@ -3,6 +3,7 @@ package com.example.svg_project.service;
 import com.example.svg_project.model.request.PageItemRequest;
 import com.example.svg_project.model.request.UpdateItemRequest;
 import com.example.svg_project.model.response.ClassificationResponse;
+import com.example.svg_project.model.response.ItemLocationResponse;
 import com.example.svg_project.model.response.ItemResponse;
 import com.example.svg_project.model.response.UnitResponse;
 import com.example.svg_project.model.response.page.PageItemResponse;
@@ -24,4 +25,5 @@ public interface ItemService {
     List<String> findDistinctRemarks();
     PageItemResponse sortFilterPagingSearchItems(PageItemRequest pageItemRequest);
     void dowloadFromExcelItems();
+    List<ItemLocationResponse> getListItemLocationByItemId(Long itemId);
 }
