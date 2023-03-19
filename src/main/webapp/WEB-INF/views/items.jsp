@@ -249,7 +249,6 @@
                     filterData.start = d.start || 0;
                     filterData.length = d.length || 10;
                     filterData.itemName = d.search.value;
-                    console.log(d);
                     return JSON.stringify(filterData); // get -> request param, post put -> request body
                 },
                 dataSrc: function (json) { // xử lý kết quả tìm kiếm từ API trước khi trả về cho DataTable
