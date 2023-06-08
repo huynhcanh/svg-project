@@ -114,6 +114,10 @@
             ajax: {
                 url: '/api/locations',
                 method: 'GET',
+                beforeSend: function(xhr) {
+                    var token = localStorage.getItem("token");
+                    xhr.setRequestHeader("Authorization", "Bearer " + token);
+                },
                 dataSrc: ''
             },
             columns: [

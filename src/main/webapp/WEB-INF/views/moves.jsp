@@ -103,33 +103,37 @@
     var table;
     $(document).ready(function (){
         table = $('#data-table-item').DataTable({
-            'ajax': {
-                'url': '/api/item-location',
-                'method': 'GET',
-                'dataSrc': ''
+            ajax: {
+                url: '/api/item-location',
+                method: 'GET',
+                beforeSend: function(xhr) {
+                    var token = localStorage.getItem("token");
+                    xhr.setRequestHeader("Authorization", "Bearer " + token);
+                },
+                dataSrc: ''
             },
-            'columns': [
+            columns: [
                 {
                     data: 'location',
-                    'render': function (data, type, full, meta) {
+                    render: function (data, type, full, meta) {
                         return (data) ? data.warehouse: null;
                     }
                 },
                 {
                     data: 'location',
-                    'render': function (data, type, full, meta) {
+                    render: function (data, type, full, meta) {
                         return (data) ? data.rack: null;
                     }
                 },
                 {
                     data: 'location',
-                    'render': function (data, type, full, meta) {
+                    render: function (data, type, full, meta) {
                         return (data) ? data.tray: null;
                     }
                 },
                 {
                     data: 'item.classification',
-                    'render': function (data, type, full, meta) {
+                    render: function (data, type, full, meta) {
                         return (data) ? data.value: null;
                     }
                 },
@@ -140,7 +144,7 @@
                 { data: 'modifiedBy' },
                 {
                     data: 'id',
-                    'render': function (data, type, full, meta){
+                    render: function (data, type, full, meta){
                         return '<input type="checkbox" name="ids" value="'+data+'">';
                     }
                 }
@@ -148,7 +152,7 @@
             dom: 'Bfrtip',
             filter: false,
             bSort: false,
-            "drawCallback": function( settings ) { // active when draw done datatable
+            drawCallback: function( settings ) { // active when draw done datatable
 
             }
         });

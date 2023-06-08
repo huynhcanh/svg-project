@@ -1,3 +1,4 @@
+<%@ page import="com.example.svg_project.utils.SecurityUtils" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@include file="/common/taglib.jsp" %>
 <html>
@@ -98,6 +99,10 @@
             ajax: {
                 url: '/api/classifications',
                 method: 'GET',
+                beforeSend: function(xhr) {
+                    var token = localStorage.getItem("token");
+                    xhr.setRequestHeader("Authorization", "Bearer " + token);
+                },
                 dataSrc: ''
             },
             columns: [

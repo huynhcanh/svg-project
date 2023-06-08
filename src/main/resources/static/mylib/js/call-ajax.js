@@ -5,6 +5,10 @@ function callDB(urlApi, type, data, cb) {
         contentType: 'application/json',
         data: JSON.stringify(data),
         dataType: 'json',
+        beforeSend: function(xhr) {
+            var token = localStorage.getItem("token");
+            xhr.setRequestHeader("Authorization", "Bearer " + token);
+        },
         success: function (result) {
             if(typeof cb === 'function'){
                 cb({

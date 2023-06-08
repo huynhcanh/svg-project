@@ -51,6 +51,10 @@
                 data: function (d) {
                     return JSON.stringify(historyRequest);
                 },
+                beforeSend: function(xhr) {
+                    var token = localStorage.getItem("token");
+                    xhr.setRequestHeader("Authorization", "Bearer " + token);
+                },
                 dataSrc: function (json) {
                     return json;
                 }

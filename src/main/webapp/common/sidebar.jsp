@@ -91,6 +91,13 @@
                 </ul>
             </li>
     <li class="@@calendaractive"><a href="/scan-qr"><i class="zmdi zmdi-calendar"></i> Scan QR</a></li>
+
+    <li class="@@calendaractive">
+        <form action="/j_spring_security_logout" method="post">
+            <i class="zmdi zmdi-calendar"></i> <input type="submit" value="Logout" />
+        </form>
+    </li>
+
 <%--            <li class="navigation__sub @@samplepagesactive">--%>
 <%--                <a href="#"><i class="zmdi zmdi-collection-item"></i> Sample Pages</a>--%>
 

@@ -244,6 +244,10 @@
                 method: 'POST',
                 contentType: 'application/json',
                 dataType: 'json',
+                beforeSend: function(xhr) {
+                    var token = localStorage.getItem("token");
+                    xhr.setRequestHeader("Authorization", "Bearer " + token);
+                },
                 data: function (d) {
                     // d.draw xác định request mới nhất từ datatable gửi đi
                     filterData.start = d.start || 0;
